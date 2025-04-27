@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="login.js" defer></script>
+</head>
+
+<body>
+  <main>
+    <div class="auth-container">
+      <div class="auth-card">
+        <h1>Iniciar Sesión</h1>
+        <form id="loginForm" class="form-group">
+      
+        <label for="email" class="sr-only">email</label>
+          <input type="email" name="email" id="email" placeholder="Correo electrónico*" required>
+        
+        <label for="password" class="sr-only">password</label>
+          <input type="password" name="password" id="password" placeholder="Contraseña*" required>
+          <button type="submit" class="btn">Ingresar</button>
+          
+          <p class="error-message ">ERROR AL INICIAR SESION</p>
+        </form>
+        <p class="auth-switch">¿No tienes cuenta? <a href="/register">Regístrate</a></p>
+        <p class="auth-switch"><a href="Solicitarcorre.html">¿Olvidaste tu contraseña?</a></p>
+      </div>
+    </div>
+
+  </main>
+</body>
+
+</html>

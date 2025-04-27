@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Proyectos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+    <link rel="stylesheet" href="/admin.css">
+    <script src="admin.js"></script>
+   </head>
+<body>
+    <!-- Header con logo -->
+    <header class="header">
+        <img src="/taskal.jpg" alt="Logo" class="logo">
+    </header>
+    
+    <!-- Panel izquierdo -->
+    <aside class="sidebar">
+        <div class="user-profile">
+            <h3 class="user-name">Nombre Usuario</h3>
+            <p class="user-email">usuario@example.com</p>
+        </div>
+        
+        <div class="projects-section">
+            <h3 class="projects-title">
+                Mis Proyectos
+                <button class="add-project" id="add-project-btn">+</button>
+            </h3>
+            <ul class="project-list" id="owned-projects">
+                <!-- Proyectos que el usuario ha creado -->
+                <li class="project-item owner">Proyecto 1</li>
+                <li class="project-item owner">Proyecto 2</li>
+            </ul>
+        </div>
+        
+        <div class="projects-section">
+            <h3 class="projects-title">Proyectos en los que participo</h3>
+            <ul class="project-list" id="member-projects">
+                <!-- Proyectos en los que el usuario es miembro -->
+                <li class="project-item member">Proyecto A</li>
+                <li class="project-item member">Proyecto B</li>
+            </ul>
+        </div>
+    </aside>
+    
+    <!-- Área principal -->
+    <main class="main-content">
+        <div class="view-options">
+            <div class="view-option active" data-view="list">Lista</div>
+            <div class="view-option" data-view="kanban">Kanban</div>
+            <div class="view-option" data-view="gantt">Gantt</div>
+        </div>
+        
+        <div class="project-view active" id="list-view">
+            <h2>Proyecto Seleccionado - Vista de Lista</h2>
+            <button class="btn btn-primary" id="add-task-btn">Añadir Tarea</button>
+            
+            <div class="list-view">
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span>Tarea 1 - Descripción breve</span>
+                </div>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span>Tarea 2 - Descripción breve</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="project-view" id="kanban-view">
+            <h2>Proyecto Seleccionado - Vista Kanban</h2>
+            <button class="btn btn-primary" id="add-task-kanban-btn">Añadir Tarea</button>
+            
+            <div class="kanban-view">
+                <div class="kanban-column">
+                    <div class="kanban-column-title">Por hacer</div>
+                    <div class="kanban-task">Tarea 1</div>
+                    <div class="kanban-task">Tarea 2</div>
+                </div>
+                <div class="kanban-column">
+                    <div class="kanban-column-title">En progreso</div>
+                    <div class="kanban-task">Tarea 3</div>
+                </div>
+                <div class="kanban-column">
+                    <div class="kanban-column-title">Completado</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="project-view" id="gantt-view">
+            <h2>Proyecto Seleccionado - Vista Gantt</h2>
+            <div class="gantt-controls">
+                <button class="gantt-btn" id="zoom-in">+ Zoom</button>
+                <button class="gantt-btn" id="zoom-out">- Zoom</button>
+                <button class="gantt-btn" id="fit-view">Ajustar Vista</button>
+            </div>
+            <div class="gantt-container" id="gantt-chart"></div>
+        </div>
+    </main>
+    
+    <!-- Modal para crear proyecto -->
+    <div class="modal" id="project-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Crear Nuevo Proyecto</h3>
+            <div class="form-group">
+                <label for="project-name">Nombre del Proyecto</label>
+                <input type="text" id="project-name" placeholder="Nombre del proyecto">
+            </div>
+            <div class="form-group">
+                <label for="project-description">Descripción</label>
+                <textarea id="project-description" rows="3" placeholder="Descripción del proyecto"></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancel-project">Cancelar</button>
+                <button class="btn btn-primary" id="save-project">Crear Proyecto</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para crear tarea -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Añadir Nueva Tarea</h3>
+            <div class="form-group">
+                <label for="task-title">Título</label>
+                <input type="text" id="task-title" placeholder="Título de la tarea">
+            </div>
+            <div class="form-group">
+                <label for="task-description">Descripción</label>
+                <textarea id="task-description" rows="3" placeholder="Descripción de la tarea"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="task-assignee">Asignar a</label>
+                <select id="task-assignee">
+                    <option value="">Seleccionar miembro</option>
+                    <option value="user1">Usuario 1</option>
+                    <option value="user2">Usuario 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="task-due-date">Fecha límite</label>
+                <input type="date" id="task-due-date">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancel-task">Cancelar</button>
+                <button class="btn btn-primary" id="save-task">Crear Tarea</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para invitar usuarios -->
+    <div class="modal" id="invite-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Invitar a Proyecto</h3>
+            <div class="form-group">
+                <label for="invite-email">Invitar por correo</label>
+                <input type="email" id="invite-email" placeholder="correo@example.com">
+                <button class="btn btn-primary" style="margin-top: 5px;">Enviar Invitación</button>
+            </div>
+            
+            <div class="invite-methods">
+                <div class="invite-method">
+                    <label>Enlace de invitación</label>
+                    <div class="invite-code">
+                        <input type="text" id="invite-link" value="https://miweb.com/invite/abc123" readonly>
+                        <button class="copy-btn">Copiar</button>
+                    </div>
+                </div>
+                
+                <div class="invite-method">
+                    <label>Código de invitación</label>
+                    <div class="invite-code">
+                        <input type="text" id="invite-code" value="XyZ7k" readonly>
+                        <button class="copy-btn">Copiar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="close-invite">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notificación -->
+    <div class="notification" id="notification">
+        Cambios guardados correctamente
+    </div>
+    
+   
+   
+</body>
+</html>
