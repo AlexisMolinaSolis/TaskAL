@@ -328,3 +328,46 @@ body {
     border-radius: 3px;
     cursor: pointer;
 }
+
+.inicio-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Pantalla completa */
+    background-color: #fff; /* Fondo blanco o el que prefieras */
+    font-family: sans-serif;
+  }
+  
+  .texto-inicio {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: left;
+    line-height: 1.2;
+  }
+  
+  .texto-inicio .signo {
+    font-size: 5rem;
+    vertical-align: middle;
+  }
+  
+  .botones-inicio {
+    margin-left: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .boton-opcion {
+    background: none;
+    border: none;
+    color: #f15b5b; /* Rojo suave */
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+  }
+  
+  .boton-opcion:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,27 +1,28 @@
 import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
-import { usuarios } from "./../controllers/authentication.controller.js";
+import pool from '../config/database.js'; // Importa la conexión a la base de datos
 
 dotenv.config();
 
-function soloAdmin(req, res, next) {
-  const usuario = revisarCookie(req);
+async function soloAdmin(req, res, next) {
+  const usuario = await revisarCookie(req);
   if (usuario) {
-    // Opcional: Verificar si es admin (si tienes ese rol)
+    // Opcional: Aquí podrías verificar si el usuario tiene un rol de administrador
+    // Consultando la base de datos si es necesario.
     return next();
   }
   return res.redirect("/");
 }
 
-function soloPublico(req, res, next) {
-  const usuario = revisarCookie(req);
+async function soloPublico(req, res, next) {
+  const usuario = await revisarCookie(req);
   if (!usuario) {
     return next();
   }
   return res.redirect("/admin");
 }
 
-function revisarCookie(req) {
+async function revisarCookie(req) {
   try {
     // 1. Verificar si existe la cookie
     if (!req.headers.cookie) {
@@ -31,28 +32,37 @@ function revisarCookie(req) {
     // 2. Extraer la cookie JWT
     const cookies = req.headers.cookie.split("; ");
     const jwtCookie = cookies.find(cookie => cookie.startsWith("jwt="));
-    
+
     if (!jwtCookie) {
       return false;
     }
 
     const cookieJWT = jwtCookie.slice(4);
-    
+
     // 3. Verificar y decodificar el token
     const decodificada = jsonwebtoken.verify(cookieJWT, process.env.JWT_SECRET);
     console.log("Token decodificado:", decodificada);
 
-    // 4. Buscar usuario por email (ahora usamos email en lugar de user)
-    const usuario = usuarios.find(u => u.email === decodificada.email);
-    console.log("Usuario encontrado:", usuario);
+    // 4. Buscar usuario por email en la base de datos
+    const [rows] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [decodificada.email]);
+
+    if (rows.length === 0) {
+      console.log("Usuario no encontrado en la base de datos");
+      return false;
+    }
+
+    const usuario = rows[0];
+    console.log("Usuario encontrado en la base de datos:", usuario);
 
     // 5. Verificar si el usuario existe y está verificado
     if (!usuario || !usuario.verificado) {
+      console.log("Usuario no verificado o no existe");
       return false;
     }
 
     // Devolver datos del usuario para usar en los middlewares
     return {
+      id: usuario.id,
       email: usuario.email,
       nombre: usuario.nombre,
       apellido: usuario.apellido,

@@ -1,18 +1,10 @@
 import bcryptjs from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
-import { enviarMailVerificacion } from "./../services/mail.service.js";
+import pool from '../config/database.js'; // Importa la conexión a la base de datos
+// import { enviarMailVerificacion } from "./../services/mail.service.js";
 
 dotenv.config();
-
-// Base de datos de usuarios (ahora con nombre y apellido)
-export const usuarios = [{
-  nombre: "Admin",
-  apellido: "Sistema",
-  email: "j70442280@gmail.com",
-  password: "$2a$05$nLY2It8riku2vwwDIINdgO/XIyPXRg1Gn9LFgnhwKqC4TwcAwEUL2",
-  verificado: true
-}];
 
 async function login(req, res) {
   console.log("Datos recibidos:", req.body);
@@ -24,62 +16,73 @@ async function login(req, res) {
     return res.status(400).send({ status: "Error", message: "Email y contraseña son requeridos" });
   }
 
-  const usuario = usuarios.find(u => u.email.toLowerCase() === email);
+  try {
+    const [rows] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
 
-  if (!usuario) {
-    return res.status(400).send({ status: "Error", message: "Credenciales incorrectas" });
-  }
-
-  if (!usuario.verificado) {
-    return res.status(403).send({ 
-      status: "Error", 
-      message: "Por favor verifica tu email antes de iniciar sesión" 
-    });
-  }
-
-  const passwordCorrecto = await bcryptjs.compare(password, usuario.password);
-
-  if (!passwordCorrecto) {
-    return res.status(400).send({ status: "Error", message: "Credenciales incorrectas" });
-  }
-
-  const token = jsonwebtoken.sign(
-    { 
-      email: usuario.email,
-      nombre: usuario.nombre,
-      apellido: usuario.apellido 
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRATION || "1h" }
-  );
-
-  const cookieOption = {
-    expires: new Date(Date.now() + (process.env.JWT_COOKIE_EXPIRES || 7) * 24 * 60 * 60 * 1000),
-    path: "/",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production"
-  };
-
-  res.cookie("jwt", token, cookieOption);
-  return res.send({ 
-    status: "ok", 
-    message: `Bienvenido ${usuario.nombre}`, 
-    redirect: "/admin",
-    usuario: {
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      email: usuario.email
+    if (rows.length === 0) {
+      return res.status(400).send({ status: "Error", message: "Credenciales incorrectas" });
     }
-  });
+
+    const usuario = rows[0];
+
+    if (!usuario.verificado) {
+      return res.status(403).send({
+        status: "Error",
+        message: "Por favor verifica tu email antes de iniciar sesión"
+      });
+    }
+
+    const passwordCorrecto = await bcryptjs.compare(password, usuario.password);
+
+    if (!passwordCorrecto) {
+      return res.status(400).send({ status: "Error", message: "Credenciales incorrectas" });
+    }
+
+    const token = jsonwebtoken.sign(
+      {
+        email: usuario.email,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        id: usuario.id // Añade el ID del usuario al token si lo necesitas
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRATION || "1h" }
+    );
+
+    const cookieOption = {
+      expires: new Date(Date.now() + (process.env.JWT_COOKIE_EXPIRES || 7) * 24 * 60 * 60 * 1000),
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production"
+    };
+
+    res.cookie("jwt", token, cookieOption);
+    return res.send({
+      status: "ok",
+      message: `Bienvenido ${usuario.nombre}`,
+      redirect: "/admin",
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        email: usuario.email
+      }
+    });
+
+  } catch (error) {
+    console.error("Error en login:", error);
+    return res.status(500).send({ status: "error", message: "Error en el proceso de login" });
+  }
 }
 
 async function register(req, res) {
+  
   const { nombre, apellido, email, password } = req.body;
   const emailNormalizado = email?.trim().toLowerCase();
 
   if (!nombre || !apellido || !emailNormalizado || !password) {
-    return res.status(400).send({ 
-      status: "Error", 
+    return res.status(400).send({
+      status: "Error",
       message: "Todos los campos son obligatorios",
       camposFaltantes: {
         nombre: !nombre,
@@ -90,86 +93,72 @@ async function register(req, res) {
     });
   }
 
-  const usuarioExistente = usuarios.find(u => u.email.toLowerCase() === emailNormalizado);
-
-  if (usuarioExistente) {
-    return res.status(400).send({ status: "Error", message: "Este email ya está registrado" });
-  }
-
   try {
+    const [existingUser] = await pool.execute('SELECT email FROM usuarios WHERE email = ?', [emailNormalizado]);
+    if (existingUser.length > 0) {
+      return res.status(400).send({ status: "Error", message: "Este email ya está registrado" });
+    }
+
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(password, salt);
 
-    const tokenVerificacion = jsonwebtoken.sign(
-      { email: emailNormalizado, nombre, apellido },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+    const [result] = await pool.execute(
+      'INSERT INTO usuarios (nombre, apellido, email, password, verificado) VALUES (?, ?, ?, ?, ?)',
+      [nombre, apellido, emailNormalizado, hashPassword, 0]
     );
 
-    const mail = await enviarMailVerificacion(emailNormalizado, tokenVerificacion, { nombre, apellido });
-    
-    if (!mail.accepted || mail.accepted.length === 0) {
-      return res.status(500).send({ 
-        status: "error", 
-        message: "Error enviando email de verificación" 
-      });
-    }
+//aqui lo de mail
 
-    const nuevoUsuario = {
-      nombre,
-      apellido,
-      email: emailNormalizado,
-      password: hashPassword,
-      verificado: false
-    };
 
-    usuarios.push(nuevoUsuario);
-    
-    return res.status(201).send({ 
-      status: "ok", 
+    return res.status(201).send({
+      status: "ok",
       message: `Usuario ${nombre} registrado. Verifica tu email.`,
       redirect: "/"
     });
 
   } catch (error) {
     console.error("Error en registro:", error);
-    return res.status(500).send({ 
-      status: "error", 
-      message: "Error en el proceso de registro" 
+    return res.status(500).send({
+      status: "error",
+      message: "Error en el proceso de registro"
     });
   }
 }
 
-function verificarCuenta(req, res) {
+async function verificarCuenta(req, res) {
   try {
     const { token } = req.query;
-    
+
     if (!token) {
       return res.redirect("/?error=token_requerido");
     }
 
     const decodificado = jsonwebtoken.verify(token, process.env.JWT_SECRET);
-    
+
     if (!decodificado?.email) {
       return res.redirect("/?error=token_invalido");
     }
 
-    const usuarioIndex = usuarios.findIndex(u => u.email.toLowerCase() === decodificado.email.toLowerCase());
-
-    if (usuarioIndex === -1) {
+    const [rows] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [decodificado.email]);
+    if (rows.length === 0) {
       return res.redirect("/?error=usuario_no_encontrado");
     }
 
-    // Actualizar usuario
-    usuarios[usuarioIndex].verificado = true;
-    const usuario = usuarios[usuarioIndex];
+    const usuario = rows[0];
+
+    if (usuario.verificado) {
+      return res.redirect("/?info=cuenta_ya_verificada");
+    }
+
+    await pool.execute('UPDATE usuarios SET verificado = 1 WHERE email = ?', [decodificado.email]);
 
     // Crear cookie de sesión
     const tokenSesion = jsonwebtoken.sign(
-      { 
+      {
         email: usuario.email,
         nombre: usuario.nombre,
-        apellido: usuario.apellido 
+        apellido: usuario.apellido,
+        id: usuario.id
       },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRATION || "1h" }
@@ -192,5 +181,5 @@ function verificarCuenta(req, res) {
 export const methods = {
   login,
   register,
-  verificarCuenta 
+  verificarCuenta
 };

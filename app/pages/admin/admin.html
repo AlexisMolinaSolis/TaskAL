@@ -17,6 +17,7 @@
     
     <!-- Panel izquierdo -->
     <aside class="sidebar">
+        <!-- Info usuario-->
         <div class="user-profile">
             <h3 class="user-name">Nombre Usuario</h3>
             <p class="user-email">usuario@example.com</p>
@@ -46,13 +47,23 @@
     
     <!-- Área principal -->
     <main class="main-content">
+        <div class="inicio-container">
+            <div class="texto-inicio">
+              <p>Qué<br>quieres<br>hacer<br>hoy<br><span class="signo">?</span></p>
+            </div>
+            <div class="botones-inicio">
+              <button class="boton-opcion">Crear un proyecto</button>
+              <button class="boton-opcion">Unirse a un equipo</button>
+            </div>
+          </div>          
+
         <div class="view-options">
-            <div class="view-option active" data-view="list">Lista</div>
+            <div class="view-option" data-view="list">Lista</div>
             <div class="view-option" data-view="kanban">Kanban</div>
             <div class="view-option" data-view="gantt">Gantt</div>
         </div>
         
-        <div class="project-view active" id="list-view">
+        <div class="project-view" id="list-view">
             <h2>Proyecto Seleccionado - Vista de Lista</h2>
             <button class="btn btn-primary" id="add-task-btn">Añadir Tarea</button>
             
