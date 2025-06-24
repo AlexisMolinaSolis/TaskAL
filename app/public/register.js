@@ -1,4 +1,4 @@
- // Selección de elementos
+// Selección de elementos
 const mensajeError = document.querySelector('.error-message');
 const mensajeExito = document.querySelector('.success-message');
 const registerForm = document.getElementById('registerForm');
@@ -30,6 +30,10 @@ registerForm.addEventListener('submit', async (e) => {
   const password = e.target.elements.password.value;
   const confirmPassword = e.target.elements.confirmPassword.value;
 
+  // Botón y texto original
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn ? submitBtn.textContent : '';
+
   // Validaciones frontend mejoradas
   if (!nombre || !apellido || !email || !password || !confirmPassword) {
     mostrarMensaje(mensajeError, 'Todos los campos son obligatorios');
@@ -53,8 +57,6 @@ registerForm.addEventListener('submit', async (e) => {
 
   try {
     // Mostrar estado de carga
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Registrando...';
 
@@ -90,7 +92,6 @@ registerForm.addEventListener('submit', async (e) => {
     mostrarMensaje(mensajeError, error.message || 'Error de conexión con el servidor');
   } finally {
     // Restaurar botón
-    const submitBtn = e.target.querySelector('button[type="submit"]');
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.textContent = originalBtnText;

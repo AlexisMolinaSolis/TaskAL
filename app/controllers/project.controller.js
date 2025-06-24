@@ -215,7 +215,6 @@ WHERE id_proyecto = ?;`,
         res.status(500).json({ message: 'Error interno del servidor al obtener tareas.' });
     }
 }
-
 async function createTask(req, res) {
     const { projectId } = req.params;
     const userId = req.usuario.id; // Quien crea la tarea
@@ -240,6 +239,24 @@ async function createTask(req, res) {
         if (projectMembership[0].count === 0 && projectOwner[0].count === 0) {
             return res.status(403).json({ message: 'Acceso denegado. No eres miembro de este proyecto.' });
         }
+
+        // --- Validar fechas de la tarea principal respecto al proyecto ---
+        const [projectInfo] = await pool.execute(
+            'SELECT fecha_inicio, fecha_vencimiento FROM proyectos WHERE id_proyecto = ?',
+            [projectId]
+        );
+        if (projectInfo.length === 0) {
+            return res.status(404).json({ message: 'Proyecto no encontrado.' });
+        }
+        const projectStart = projectInfo[0].fecha_inicio;
+        const projectDue = projectInfo[0].fecha_vencimiento;
+
+        if (startDate < projectStart || dueDate > projectDue) {
+            return res.status(400).json({
+                message: `Las fechas de la tarea (${startDate} a ${dueDate}) deben estar dentro del rango del proyecto (${projectStart} a ${projectDue}).`
+            });
+        }
+        // --- Fin validación fechas ---
 
         const taskId = crypto.randomUUID(); // Genera un UUID
         const defaultStatus = 'pendiente'; // Estado inicial de la tarea
@@ -271,7 +288,6 @@ async function createTask(req, res) {
 async function updateTask(req, res) {
     const { projectId, taskId } = req.params;
     const userId = req.usuario.id;
-    // --- CORREGIDO: Mapeo de propiedades de entrada a nombres de columna de DB ---
     const { title, description, startDate, dueDate, priority, status, assignedTo, dependencies, progressPercentage } = req.body;
     const nombreTarea = title;
     const asignadoA = assignedTo === '' ? null : assignedTo;
@@ -288,6 +304,39 @@ async function updateTask(req, res) {
         );
         if (projectMembership[0].count === 0 && projectOwner[0].count === 0) {
             return res.status(403).json({ message: 'Acceso denegado. No eres miembro de este proyecto.' });
+        }
+
+        // Validar fechas si se van a actualizar
+        if (startDate !== undefined || dueDate !== undefined) {
+            const [projectInfo] = await pool.execute(
+                'SELECT fecha_inicio, fecha_vencimiento FROM proyectos WHERE id_proyecto = ?',
+                [projectId]
+            );
+            if (projectInfo.length === 0) {
+                return res.status(404).json({ message: 'Proyecto no encontrado.' });
+            }
+            const projectStart = projectInfo[0].fecha_inicio;
+            const projectDue = projectInfo[0].fecha_vencimiento;
+
+            // Si no se envía alguno de los dos, obtener el valor actual de la tarea
+            let newStart = startDate, newDue = dueDate;
+            if (startDate === undefined || dueDate === undefined) {
+                const [taskInfo] = await pool.execute(
+                    'SELECT fecha_inicio, fecha_vencimiento FROM tareas WHERE id_tarea = ? AND id_proyecto = ?',
+                    [taskId, projectId]
+                );
+                if (taskInfo.length === 0) {
+                    return res.status(404).json({ message: 'Tarea no encontrada.' });
+                }
+                if (startDate === undefined) newStart = taskInfo[0].fecha_inicio;
+                if (dueDate === undefined) newDue = taskInfo[0].fecha_vencimiento;
+            }
+
+            if (newStart < projectStart || newDue > projectDue) {
+                return res.status(400).json({
+                    message: `Las fechas de la tarea (${newStart} a ${newDue}) deben estar dentro del rango del proyecto (${projectStart} a ${projectDue}).`
+                });
+            }
         }
 
         let updateFields = [];
@@ -569,7 +618,6 @@ async function getTaskComments(req, res) {
 async function addSubtask(req, res) {
     const { taskId } = req.params; // Este es el ID de la tarea padre
     const userId = req.usuario.id;
-    // --- Asumiendo que las subtareas tienen las mismas propiedades que las tareas ---
     const { title, description, startDate, dueDate, priority, assignedTo } = req.body;
     const nombreSubtarea = title;
     const asignadoA = assignedTo === '' ? null : assignedTo;
@@ -580,11 +628,20 @@ async function addSubtask(req, res) {
 
     try {
         // Verificar que la tarea padre existe y que el usuario es miembro de su proyecto
-        const [parentTaskInfo] = await pool.execute('SELECT id_proyecto FROM tareas WHERE id_tarea = ?', [taskId]);
+        const [parentTaskInfo] = await pool.execute('SELECT id_proyecto, fecha_inicio, fecha_vencimiento FROM tareas WHERE id_tarea = ?', [taskId]);
         if (parentTaskInfo.length === 0) {
             return res.status(404).json({ message: 'Tarea padre no encontrada.' });
         }
-        const projectId = parentTaskInfo[0].id_proyecto; // Obtener el ID del proyecto de la tarea padre
+        const projectId = parentTaskInfo[0].id_proyecto;
+        const parentStart = parentTaskInfo[0].fecha_inicio;
+        const parentDue = parentTaskInfo[0].fecha_vencimiento;
+
+        // Validar fechas de la subtarea respecto a la tarea principal
+        if (startDate < parentStart || dueDate > parentDue) {
+            return res.status(400).json({
+                message: `Las fechas de la subtarea (${startDate} a ${dueDate}) deben estar dentro del rango de la tarea principal (${parentStart} a ${parentDue}).`
+            });
+        }
 
         const [projectMembership] = await pool.execute(
             `SELECT COUNT(*) AS count FROM miembros_de_equipo WHERE id_proyecto = ? AND id_usuario = ?`,
@@ -601,8 +658,6 @@ async function addSubtask(req, res) {
         const subtaskId = crypto.randomUUID();
         const defaultStatus = 'pendiente';
 
-        // --- CORREGIDO: Nombres de columna en INSERT para 'subtareas' ---
-        // Asumiendo que 'subtareas' tiene 'titulo' y 'asignado_a'
         const [result] = await pool.execute(
             `INSERT INTO subtareas (id_subtarea, tarea_padre, titulo, descripcion, fecha_inicio, fecha_vencimiento, prioridad, estado, asignado_a)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,

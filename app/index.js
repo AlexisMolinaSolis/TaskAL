@@ -54,7 +54,7 @@ app.use((req, res, next) => {
 app.get("/",authorization.soloPublico, (req,res)=> res.sendFile(path.join(__dirname, "pages", "login.html")));
 app.get("/register",authorization.soloPublico,(req,res)=> res.sendFile(path.join(__dirname, "pages", "register.html")));
 app.get("/admin",authorization.soloAdmin,(req,res)=> res.sendFile(path.join(__dirname, "pages", "admin", "admin.html")));
-app.get("/verificar/:token", authentication.verificarCuenta); // Ruta de verificación de cuenta por correo
+app.get("/verificar-cuenta", authentication.verificarCuenta); // Ruta de verificación de cuenta por correo
 
 // Rutas de API de autenticación (login y registro)
 app.post("/api/login",authentication.login);
@@ -84,6 +84,17 @@ app.get("/api/dashboard", authorization.soloAdmin, dashboardController.getDashbo
 
 app.get("/admin/eventosMail",authorization.soloAdmin);
 
+
+// Comentarios de tareas
+app.get("/api/projects/:projectId/tasks/:taskId/comments", authorization.soloAdmin, projectController.getTaskComments);
+app.post("/api/projects/:projectId/tasks/:taskId/comments", authorization.soloAdmin, projectController.addCommentToTask);
+
+// Subtareas de tareas
+app.get("/api/projects/:projectId/tasks/:taskId/subtasks", authorization.soloAdmin, projectController.getSubtasks);
+app.post("/api/projects/:projectId/tasks/:taskId/subtasks", authorization.soloAdmin, projectController.addSubtask);
+
+// Editar tarea principal
+app.put("/api/projects/:projectId/tasks/:taskId", authorization.soloAdmin, projectController.updateTask);
 
 // --- Nuevo: Manejo de Errores Globales ---
 

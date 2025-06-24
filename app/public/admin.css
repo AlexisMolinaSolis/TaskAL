@@ -941,3 +941,8 @@ body {
     text-align: left; /* Alineación de texto a la izquierda */
     padding: 0; /* Sin relleno */
 }
+
+/* Colores para las barras del Gantt según prioridad */
+.gantt-priority-baja .bar { fill: #3498db !important; }    /* Azul */
+.gantt-priority-media .bar { fill: #f1c40f !important; }   /* Amarillo */
+.gantt-priority-alta .bar { fill: #e74c3c !important; }    /* Rojo */

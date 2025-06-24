@@ -6,6 +6,7 @@ let loggedInUser = null;
 let allProjectMembers = []; // Cache of members for the current project
 let allProjectTasks = []; // Cache of tasks for the current project
 let ganttChart = null; // Instance of the Frappe Gantt chart
+let isEditingTask = false;
 
 // --- Constants ---
 const API_BASE_URL = '/api'; // Base URL for your API endpoints
@@ -754,19 +755,32 @@ DOMElements.saveTaskBtn.addEventListener('click', async () => {
     const priority = DOMElements.taskPrioritySelect.value;
     const assignedTo = DOMElements.taskAssigneeSelect.value || null;
     const dependencies = Array.from(DOMElements.taskDependenciesSelect.selectedOptions).map(option => option.value);
+
     if (!title || !startDate || !dueDate) {
         showNotification('Título, fecha de inicio y fecha límite de la tarea son obligatorios.', 'error');
         return;
     }
+
     try {
-        await fetchWrapper(`/projects/${currentProject._id}/tasks`, {
-            method: 'POST',
-            body: JSON.stringify({
-                title, description, startDate, dueDate, priority, assignedTo, dependencies
-            })
-        });
+        if (isEditingTask && currentTaskId) {
+            // Modo edición: PUT
+            await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    title, description, startDate, dueDate, priority, assignedTo, dependencies
+                })
+            });
+        } else {
+            // Modo creación: POST
+            await fetchWrapper(`/projects/${currentProject._id}/tasks`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    title, description, startDate, dueDate, priority, assignedTo, dependencies
+                })
+            });
+        }
         hideModal(DOMElements.taskModal);
-        // Reset form
+        // Reset form y modo edición
         DOMElements.taskTitleInput.value = '';
         DOMElements.taskDescriptionInput.value = '';
         DOMElements.taskIniDateInput.value = '';
@@ -774,111 +788,45 @@ DOMElements.saveTaskBtn.addEventListener('click', async () => {
         DOMElements.taskPrioritySelect.value = 'media';
         DOMElements.taskAssigneeSelect.value = '';
         DOMElements.taskDependenciesSelect.innerHTML = '';
+        isEditingTask = false;
         await loadProjectData(currentProject._id);
     } catch (error) {
-        console.error('Error al crear tarea:', error);
+        console.error('Error al guardar tarea:', error);
     }
 });
 
-DOMElements.saveSubtaskBtn.addEventListener('click', async () => {
+// Botón editar tarea (abre el modal en modo edición)
+DOMElements.editTaskBtn.addEventListener('click', async () => {
     if (!currentProject || !currentTaskId) return;
-    const title = DOMElements.subtaskTitleInput.value;
-    const description = DOMElements.subtaskDescriptionInput.value; 
-    const startDate = DOMElements.subtaskIniDateInput.value;
-    const dueDate = DOMElements.subtaskLimDateInput.value;
-    const priority = DOMElements.subtaskPrioritySelect.value;
-    const assignedTo = DOMElements.subtaskAssigneeSelect.value || null;
-    if (!title || !startDate || !dueDate) {
-        showNotification('Título, fecha de inicio y fecha límite de la subtarea son obligatorios.', 'error');
+    const task = allProjectTasks.find(t => t._id === currentTaskId);
+    if (!task) {
+        showNotification('Tarea no encontrada.', 'error');
         return;
     }
-    try {
-        await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}/subtasks`, {
-            method: 'POST',
-            body: JSON.stringify({
-                title, description, startDate, dueDate, priority, assignedTo
-            })
+    // Rellena los campos del modal con los datos de la tarea
+    DOMElements.taskTitleInput.value = task.title;
+    DOMElements.taskDescriptionInput.value = task.description || '';
+    DOMElements.taskIniDateInput.value = formatDateForInput(task.startDate);
+    DOMElements.taskLimDateInput.value = formatDateForInput(task.dueDate);
+    DOMElements.taskPrioritySelect.value = task.priority || 'media';
+    DOMElements.taskAssigneeSelect.value = task.assignedTo || '';
+    populateDependenciesDropdown(allProjectTasks, task._id);
+    if (task.dependencies && task.dependencies.length > 0) {
+        Array.from(DOMElements.taskDependenciesSelect.options).forEach(opt => {
+            opt.selected = task.dependencies.includes(opt.value);
         });
-        hideModal(DOMElements.subtaskModal);
-        // Reset form
-        DOMElements.subtaskTitleInput.value = '';
-        DOMElements.subtaskDescriptionInput.value = '';
-        DOMElements.subtaskIniDateInput.value = '';
-        DOMElements.subtaskLimDateInput.value = '';
-        DOMElements.subtaskPrioritySelect.value = 'media';
-        DOMElements.subtaskAssigneeSelect.value = '';
-        await loadSubtasks(currentTaskId);
-    } catch (error) {
-        console.error('Error al crear subtarea:', error);
     }
+    isEditingTask = true;
+    hideModal(DOMElements.taskDetailModal); // <-- CIERRA EL MODAL DE INFORMACIÓN
+    showModal(DOMElements.taskModal);
 });
 
-// --- Task Detail Modal Logic ---
-let currentTaskId = null; // Store ID of task currently displayed in detail modal
+// Close Task Detail Modal
+DOMElements.closeTaskDetailBtn.addEventListener('click', () => {
+    hideModal(DOMElements.taskDetailModal);
+    currentTaskId = null; // Clear current task
+});
 
-/**
- * Loads and displays task details in the task-detail-modal.
- * @param {string} taskId The ID of the task to load.
- */
-async function loadTaskDetails(taskId) {
-    currentTaskId = taskId; // Set current task ID for other actions
-
-    try {
-        showLoading();
-        // Get the full task object from cached allProjectTasks
-        // Fix: Ensure we are looking in allProjectTasks, not allProjectMembers, for tasks
-        const task = allProjectTasks.find(t => t._id === taskId); 
-        if (!task) {
-            showNotification('Tarea no encontrada.', 'error');
-            hideLoading();
-            return;
-        }
-
-        // Populate basic task details
-        DOMElements.detailTaskTitle.textContent = task.title;
-        DOMElements.detailTaskDescription.textContent = task.description || 'No hay descripción.';
-        DOMElements.detailTaskIniDate.textContent = formatDateForDisplay(task.startDate);
-        DOMElements.detailTaskLimDate.textContent = formatDateForDisplay(task.dueDate);
-        DOMElements.detailTaskPriority.textContent = task.priority;
-        DOMElements.detailTaskStatus.textContent = task.status;
-        DOMElements.changeTaskStatusSelect.value = task.status; // Set value for dropdown
-        DOMElements.markTaskCompleteCheckbox.checked = task.status === 'completada';
-
-        // Find assignee name
-        const assignedToMember = allProjectMembers.find(m => m._id === task.assignedTo);
-        DOMElements.detailTaskAssignedTo.textContent = assignedToMember ? `${assignedToMember.nombre} ${assignedToMember.apellido}` : 'Sin asignar';
-
-        // Load comments
-        await loadTaskComments(taskId);
-
-        // Load subtasks
-        await loadSubtasks(taskId);
-        
-        // Populate collaborators list for the task
-        // Assuming collaboratorsList element exists and you want to show who is assigned to this task
-        DOMElements.collaboratorsList.innerHTML = '';
-        if (task.assignedTo) {
-            const assignedUser = allProjectMembers.find(m => m._id === task.assignedTo);
-            if (assignedUser) {
-                const li = document.createElement('li');
-                li.textContent = `${assignedUser.nombre} ${assignedUser.apellido}`;
-                DOMElements.collaboratorsList.appendChild(li);
-            }
-        }
-
-
-        // Hide change status dropdown initially
-        DOMElements.changeTaskStatusSelect.style.display = 'none';
-        DOMElements.detailTaskStatus.style.display = 'inline';
-
-        showModal(DOMElements.taskDetailModal);
-        hideLoading();
-    } catch (error) {
-        console.error('Error al cargar detalles de la tarea:', error);
-        showNotification('Error al cargar detalles de la tarea.', 'error');
-        hideLoading();
-    }
-}
 
 /**
  * Loads and renders comments for a specific task.
@@ -894,7 +842,7 @@ async function loadTaskComments(taskId) {
         }
         commentsData.forEach(comment => {
             const li = document.createElement('li');
-            // Assuming you want to display author name, you'd need to fetch user details or join in backend
+            // Busca el nombre del autor si está en allProjectMembers
             const author = allProjectMembers.find(m => m._id === comment.authorId);
             const authorName = author ? `${author.nombre} ${author.apellido}` : 'Usuario desconocido';
             li.innerHTML = `<strong>${authorName}</strong> (${formatDateForDisplay(comment.date)}): ${comment.text}`;
@@ -907,79 +855,11 @@ async function loadTaskComments(taskId) {
 }
 
 /**
- * Adds a new comment to the current task.
- */
-DOMElements.addCommentBtn.addEventListener('click', async () => {
-    if (!currentProject || !currentTaskId) return;
-
-    const commentText = DOMElements.newCommentInput.value.trim();
-    if (!commentText) {
-        showNotification('El comentario no puede estar vacío.', 'error');
-        return;
-    }
-
-    try {
-        await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}/comments`, {
-            method: 'POST',
-            body: JSON.stringify({ text: commentText })
-        });
-        DOMElements.newCommentInput.value = ''; // Clear input
-        await loadTaskComments(currentTaskId); // Reload comments
-    } catch (error) {
-        console.error('Error al añadir comentario:', error);
-    }
-});
-
-// Toggle status edit dropdown
-DOMElements.toggleStatusEditBtn.addEventListener('click', () => {
-    if (DOMElements.changeTaskStatusSelect.style.display === 'none') {
-        DOMElements.changeTaskStatusSelect.style.display = 'inline';
-        DOMElements.detailTaskStatus.style.display = 'none';
-        DOMElements.toggleStatusEditBtn.textContent = 'Guardar Estado';
-    } else {
-        // Save new status
-        const newStatus = DOMElements.changeTaskStatusSelect.value;
-        handleUpdateTaskStatus(newStatus);
-        DOMElements.changeTaskStatusSelect.style.display = 'none';
-        DOMElements.detailTaskStatus.style.display = 'inline';
-        DOMElements.toggleStatusEditBtn.textContent = 'Cambiar Estado';
-    }
-});
-
-// Update status on checkbox change (for 'completada')
-DOMElements.markTaskCompleteCheckbox.addEventListener('change', (event) => {
-    const newStatus = event.target.checked ? 'completada' : 'en-proceso'; // Or 'pendiente'
-    handleUpdateTaskStatus(newStatus);
-});
-
-/**
- * Handles updating task status and percentage.
- * @param {string} newStatus The new status for the task.
- */
-async function handleUpdateTaskStatus(newStatus) {
-    if (!currentProject || !currentTaskId) return;
-
-    const progressPercentage = newStatus === 'completada' ? 100 : (newStatus === 'pendiente' ? 0 : 50); // Simple progress logic
-
-    try {
-        await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}`, {
-            method: 'PUT',
-            body: JSON.stringify({ status: newStatus, progressPercentage: progressPercentage })
-        });
-        DOMElements.detailTaskStatus.textContent = newStatus; // Update UI
-        DOMElements.markTaskCompleteCheckbox.checked = newStatus === 'completada';
-        await loadProjectData(currentProject._id); // Reload to update all views
-    } catch (error) {
-        console.error('Error al actualizar estado de tarea:', error);
-    }
-}
-
-/**
  * Loads and renders subtasks for a specific task.
  * @param {string} taskId The ID of the task.
  */
 async function loadSubtasks(taskId) {
-    DOMElements.subtasksList.innerHTML = ''; // Clear previous subtasks
+    DOMElements.subtasksList.innerHTML = ''; // Limpiar subtareas anteriores
     try {
         const subtasksData = await fetchWrapper(`/projects/${currentProject._id}/tasks/${taskId}/subtasks`, { method: 'GET' });
         if (subtasksData.length === 0) {
@@ -1002,99 +882,66 @@ async function loadSubtasks(taskId) {
     }
 }
 
-// Open subtask modal
-DOMElements.addSubtaskBtn.addEventListener('click', () => {
-    if (!currentProject || !currentTaskId) return;
-    populateAssigneeDropdowns(allProjectMembers); // Subtasks can also be assigned
-    showModal(DOMElements.subtaskModal);
-});
 
-// Close subtask modal
-DOMElements.cancelSubtaskBtn.addEventListener('click', () => hideModal(DOMElements.subtaskModal));
+/**
+ * Loads and displays task details in the task-detail-modal.
+ * @param {string} taskId The ID of the task to load.
+ */
+async function loadTaskDetails(taskId) {
+    currentTaskId = taskId; // Set current task ID for other actions
 
-// Handle subtask creation
-DOMElements.saveSubtaskBtn.addEventListener('click', async () => {
-    if (!currentProject || !currentTaskId) return;
-
-    const title = DOMElements.subtaskTitleInput.value;
-    const description = DOMElements.subtaskDescriptionInput.value; 
-    const startDate = DOMElements.subtaskIniDateInput.value;
-    const dueDate = DOMElements.subtaskLimDateInput.value;
-    const priority = DOMElements.subtaskPrioritySelect.value;
-    const assignedTo = DOMElements.subtaskAssigneeSelect.value || null;
-
-    if (!title || !startDate || !dueDate) {
-        showNotification('Título, fecha de inicio y fecha límite de la subtarea son obligatorios.', 'error');
-        return;
-    }
-
-    // Validación al guardar una subtarea
-    DOMElements.saveSubtaskBtn.addEventListener('click', async () => {
-        if (!currentProject || !currentTaskId) return;
-        const startDate = DOMElements.subtaskIniDateInput.value;
-        const dueDate = DOMElements.subtaskLimDateInput.value;
-
-        // Buscar la tarea principal
-        const parentTask = allProjectTasks.find(t => t._id === currentTaskId);
-        if (!parentTask) return;
-
-        // Validar fechas de la subtarea con respecto a la tarea principal
-        if (startDate < parentTask.startDate || dueDate > parentTask.dueDate) {
-            showNotification(
-                `No se puede guardar la subtarea porque sus fechas (${startDate} a ${dueDate}) están fuera del rango de la tarea principal (${parentTask.startDate} a ${parentTask.dueDate}).`,
-                'error'
-            );
+    try {
+        showLoading();
+        const task = allProjectTasks.find(t => t._id === taskId); 
+        if (!task) {
+            showNotification('Tarea no encontrada.', 'error');
+            hideLoading();
             return;
         }
 
-        try {
-            await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}/subtasks`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    title, description, startDate, dueDate, priority, assignedTo
-                })
-            });
-            hideModal(DOMElements.subtaskModal);
-            // Reset form
-            DOMElements.subtaskTitleInput.value = '';
-            DOMElements.subtaskDescriptionInput.value = '';
-            DOMElements.subtaskIniDateInput.value = '';
-            DOMElements.subtaskLimDateInput.value = '';
-            DOMElements.subtaskPrioritySelect.value = 'media';
-            DOMElements.subtaskAssigneeSelect.value = '';
-            await loadSubtasks(currentTaskId); // Reload subtareas in detail modal
-        } catch (error) {
-            console.error('Error al crear subtarea:', error);
+        // Populate basic task details
+        DOMElements.detailTaskTitle.textContent = task.title;
+        DOMElements.detailTaskDescription.textContent = task.description || 'No hay descripción.';
+        DOMElements.detailTaskIniDate.textContent = formatDateForDisplay(task.startDate);
+        DOMElements.detailTaskLimDate.textContent = formatDateForDisplay(task.dueDate);
+        DOMElements.detailTaskPriority.textContent = task.priority;
+        DOMElements.detailTaskStatus.textContent = task.status;
+        DOMElements.changeTaskStatusSelect.value = task.status;
+        DOMElements.markTaskCompleteCheckbox.checked = task.status === 'completada';
+
+        // Find assignee name
+        const assignedToMember = allProjectMembers.find(m => m._id === task.assignedTo);
+        DOMElements.detailTaskAssignedTo.textContent = assignedToMember ? `${assignedToMember.nombre} ${assignedToMember.apellido}` : 'Sin asignar';
+
+        // Load comments
+        await loadTaskComments(taskId);
+
+        // Load subtasks
+        await loadSubtasks(taskId);
+
+        // Populate collaborators list for the task
+        DOMElements.collaboratorsList.innerHTML = '';
+        if (task.assignedTo) {
+            const assignedUser = allProjectMembers.find(m => m._id === task.assignedTo);
+            if (assignedUser) {
+                const li = document.createElement('li');
+                li.textContent = `${assignedUser.nombre} ${assignedUser.apellido}`;
+                DOMElements.collaboratorsList.appendChild(li);
+            }
         }
-    });
-});
 
+        // Hide change status dropdown initially
+        DOMElements.changeTaskStatusSelect.style.display = 'none';
+        DOMElements.detailTaskStatus.style.display = 'inline';
 
-// Delete Task
-DOMElements.deleteTaskBtn.addEventListener('click', async () => {
-    if (!currentProject || !currentTaskId) return;
-
-    const confirmed = await confirmAction('¿Estás seguro de que quieres eliminar esta tarea y todos sus datos relacionados (subtareas, comentarios, dependencias)? Esta acción no se puede deshacer.');
-
-    if (confirmed) {
-        try {
-            await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}`, {
-                method: 'DELETE'
-            });
-            hideModal(DOMElements.taskDetailModal);
-            currentTaskId = null; // Clear current task
-            await loadProjectData(currentProject._id); // Reload project tasks
-        } catch (error) {
-            console.error('Error al eliminar tarea:', error);
-        }
+        showModal(DOMElements.taskDetailModal);
+        hideLoading();
+    } catch (error) {
+        console.error('Error al cargar detalles de la tarea:', error);
+        showNotification('Error al cargar detalles de la tarea.', 'error');
+        hideLoading();
     }
-});
-
-// Close Task Detail Modal
-DOMElements.closeTaskDetailBtn.addEventListener('click', () => {
-    hideModal(DOMElements.taskDetailModal);
-    currentTaskId = null; // Clear current task
-});
+}
 
 
 // Handle invite user to project
@@ -1171,6 +1018,48 @@ DOMElements.editProfileForm.addEventListener('submit', async (event) => {
     }
 });
 
+// --- Cambiar estado de la tarea ---
+
+// Botón para mostrar el select de estado y guardar el cambio
+DOMElements.toggleStatusEditBtn.addEventListener('click', async () => {
+    if (DOMElements.changeTaskStatusSelect.style.display === 'none') {
+        DOMElements.changeTaskStatusSelect.style.display = 'inline';
+        DOMElements.detailTaskStatus.style.display = 'none';
+        DOMElements.toggleStatusEditBtn.textContent = 'Guardar Estado';
+    } else {
+        // Guardar el nuevo estado
+        const newStatus = DOMElements.changeTaskStatusSelect.value;
+        await handleUpdateTaskStatus(newStatus);
+        DOMElements.changeTaskStatusSelect.style.display = 'none';
+        DOMElements.detailTaskStatus.style.display = 'inline';
+        DOMElements.toggleStatusEditBtn.textContent = 'Cambiar Estado';
+    }
+});
+
+// Checkbox para marcar como completada
+DOMElements.markTaskCompleteCheckbox.addEventListener('change', async (event) => {
+    const newStatus = event.target.checked ? 'completada' : 'en-proceso';
+    await handleUpdateTaskStatus(newStatus);
+});
+
+/**
+ * Actualiza el estado y progreso de la tarea en el backend.
+ */
+async function handleUpdateTaskStatus(newStatus) {
+    if (!currentProject || !currentTaskId) return;
+    const progressPercentage = newStatus === 'completada' ? 100 : (newStatus === 'pendiente' ? 0 : 50);
+    try {
+        await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: newStatus, progressPercentage })
+        });
+        DOMElements.detailTaskStatus.textContent = newStatus;
+        DOMElements.markTaskCompleteCheckbox.checked = newStatus === 'completada';
+        await loadProjectData(currentProject._id);
+    } catch (error) {
+        showNotification('Error al actualizar el estado de la tarea.', 'error');
+    }
+}
 
 // --- Task Filters ---
 DOMElements.applyFiltersBtn.addEventListener('click', () => {
@@ -1209,10 +1098,6 @@ DOMElements.fitViewBtn.addEventListener('click', () => {
 // Mock for Edit Task (requires a separate modal or inline editing)
 // For simplicity, `edit-task-btn` will just log a message.
 // A full implementation would involve populating a task editing form and sending a PUT request.
-DOMElements.editTaskBtn.addEventListener('click', () => {
-    showNotification('Funcionalidad de edición de tarea no implementada aún.', 'info');
-    // TODO: Implement task editing modal/form
-});
 
 
 // Mock for File Attachments (requires Multer on backend and file storage)
@@ -1228,4 +1113,71 @@ if (DOMElements.triggerFileInput) {
 //     // TODO: Implement file upload logic (e.g., using FormData and fetch)
 //     showNotification(`Adjuntando ${files.length} archivos...`, 'info');
 // });
+
+// --- Añadir comentario a la tarea ---
+DOMElements.addCommentBtn.addEventListener('click', async () => {
+    if (!currentProject || !currentTaskId) return;
+    const commentText = DOMElements.newCommentInput.value.trim();
+    if (!commentText) {
+        showNotification('El comentario no puede estar vacío.', 'error');
+        return;
+    }
+    try {
+        await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}/comments`, {
+            method: 'POST',
+            body: JSON.stringify({ text: commentText })
+        });
+        DOMElements.newCommentInput.value = '';
+        await loadTaskComments(currentTaskId);
+    } catch (error) {
+        showNotification('Error al añadir comentario.', 'error');
+    }
+});
+
+// --- Añadir subtarea a la tarea ---
+
+// Abrir modal de subtarea
+DOMElements.addSubtaskBtn.addEventListener('click', () => {
+    if (!currentProject || !currentTaskId) return;
+    // Limpia el formulario
+    DOMElements.subtaskTitleInput.value = '';
+    DOMElements.subtaskDescriptionInput.value = '';
+    DOMElements.subtaskIniDateInput.value = '';
+    DOMElements.subtaskLimDateInput.value = '';
+    DOMElements.subtaskPrioritySelect.value = 'media';
+    DOMElements.subtaskAssigneeSelect.value = '';
+    showModal(DOMElements.subtaskModal);
+});
+
+// Cancelar creación de subtarea
+DOMElements.cancelSubtaskBtn.addEventListener('click', () => {
+    hideModal(DOMElements.subtaskModal);
+});
+
+// Guardar subtarea
+DOMElements.saveSubtaskBtn.addEventListener('click', async () => {
+    if (!currentProject || !currentTaskId) return;
+    const title = DOMElements.subtaskTitleInput.value.trim();
+    const description = DOMElements.subtaskDescriptionInput.value.trim();
+    const startDate = DOMElements.subtaskIniDateInput.value;
+    const dueDate = DOMElements.subtaskLimDateInput.value;
+    const priority = DOMElements.subtaskPrioritySelect.value;
+    const assignedTo = DOMElements.subtaskAssigneeSelect.value || null;
+
+    if (!title || !startDate || !dueDate) {
+        showNotification('Título, fecha de inicio y fecha límite de la subtarea son obligatorios.', 'error');
+        return;
+    }
+
+    try {
+        await fetchWrapper(`/projects/${currentProject._id}/tasks/${currentTaskId}/subtasks`, {
+            method: 'POST',
+            body: JSON.stringify({ title, description, startDate, dueDate, priority, assignedTo })
+        });
+        hideModal(DOMElements.subtaskModal);
+        await loadSubtasks(currentTaskId);
+    } catch (error) {
+        showNotification('Error al añadir subtarea.', 'error');
+    }
+});
 

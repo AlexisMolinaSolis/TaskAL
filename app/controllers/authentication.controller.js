@@ -77,8 +77,9 @@ async function login(req, res) {
   }
 }
 
+
+
 async function register(req, res) {
-  
   const { nombre, apellido, email, password } = req.body;
   const emailNormalizado = email?.trim().toLowerCase();
 
@@ -109,48 +110,46 @@ async function register(req, res) {
       [nombre, apellido, emailNormalizado, hashPassword, 0]
     );
 
-//aqui lo de mail
-    const plantillaMail = `<div class="container">
-      <h1>¡Hola ${nombre}!</h1>
-      <p>Gracias por registrarte en PuntoJson. Estamos emocionados de tenerte con nosotros.</p>
+    // Generar token de verificación
+    const verificationToken = jsonwebtoken.sign(
+      { email: emailNormalizado },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    const verificationLink = `${process.env.BASE_URL || "http://localhost:4000"}/verificar-cuenta?token=${verificationToken}`;
+
+    const plantillaMail = `
+      <p>¡Hola ${nombre}!</p>
+      <p>Gracias por registrarte en TaskAL. Estamos emocionados de tenerte con nosotros.</p>
       <p>Para comenzar a usar tu cuenta, por favor verifica tu dirección de email:</p>
-      
-      <a href="$verificationLink}" class="button">
-        Verificar mi cuenta
-      </a>
-      
-      <p>Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
-      <p style="word-break: break-all; background: #eee; padding: 10px; border-radius: 4px;">
-        $verificationLink}
+      <p>
+        <a href="${verificationLink}" style="background:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
+          Verificar mi cuenta
+        </a>
       </p>
+      <p>Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+      <a href="${verificationLink}">${verificationLink}</a></p>
+      <p>Si no solicitaste este registro, por favor ignora este mensaje.<br>
+      Atentamente, El equipo de TaskAL</p>
+    `;
 
-      <div class="footer">
-        <p>Si no solicitaste este registro, por favor ignora este mensaje.</p>
-        <p>Atentamente,<br><strong>El equipo de PuntoJson</strong></p>
-      </div>
-
-    </div>`;
-
-    // Create a transporter object using the SMTP transport
     let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com', // e.g., smtp.gmail.com, smtp.mailtrap.io
-        port: 587, // or 465 for SSL
-        secure: false, // true for 465, false for other ports (like 587)
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
         auth: {
             user: 'molinasolisalexisjesus@gmail.com',
             pass: 'omyn ukhr gcdk furp'
         }
     });
 
-    // Configure the mailoptions object
     let mailOptions = {
         from: 'molinasolisalexisjesus@gmail.com',
         to: emailNormalizado,
         subject: 'Verificación de Cuenta TaskAl',
-        text:plantillaMail
+        html: plantillaMail
     };
 
-    // Send the email
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
             console.log('Error:', error);
@@ -158,8 +157,6 @@ async function register(req, res) {
             console.log('Email sent:', info.response);
         }
     });
-
-
 
     return res.status(201).send({
       status: "ok",
@@ -175,7 +172,6 @@ async function register(req, res) {
     });
   }
 }
-
 async function verificarCuenta(req, res) {
   try {
     const { token } = req.query;
@@ -190,6 +186,7 @@ async function verificarCuenta(req, res) {
       return res.redirect("/?error=token_invalido");
     }
 
+    // Buscar usuario por email
     const [rows] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [decodificado.email]);
     if (rows.length === 0) {
       return res.redirect("/?error=usuario_no_encontrado");
@@ -197,19 +194,19 @@ async function verificarCuenta(req, res) {
 
     const usuario = rows[0];
 
-    if (usuario.verificado) {
-      return res.redirect("/?info=cuenta_ya_verificada");
+      if (!usuario.verificado) {
+      // Cambiar verificado a 1 usando id_usuario
+      await pool.execute('UPDATE usuarios SET verificado = 1 WHERE id_usuario = ?', [usuario.id_usuario]);
+      usuario.verificado = 1; // Actualiza el objeto para el token
     }
 
-    await pool.execute('UPDATE usuarios SET verificado = 1 WHERE email = ?', [decodificado.email]);
-
-    // Crear cookie de sesión
+    // Crear cookie de sesión (igual que en login)
     const tokenSesion = jsonwebtoken.sign(
       {
         email: usuario.email,
         nombre: usuario.nombre,
         apellido: usuario.apellido,
-        id: usuario.id
+        id: usuario.id_usuario
       },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRATION || "1h" }
@@ -218,10 +215,12 @@ async function verificarCuenta(req, res) {
     res.cookie("jwt", tokenSesion, {
       expires: new Date(Date.now() + (process.env.JWT_COOKIE_EXPIRES || 7) * 24 * 60 * 60 * 1000),
       path: "/",
-      httpOnly: true
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production"
     });
 
-    return res.redirect("/?verificado=exito");
+    // Redirige a la página principal ya logueado
+    return res.redirect("/");
 
   } catch (error) {
     console.error("Error en verificación:", error);

@@ -5,6 +5,7 @@
   "main": "app/index.js",
   "type": "module",
   "scripts": {
+    "start": "node app/index.js",
     "dev": "nodemon --exec node app/index.js"
   },
   "keywords": [],
@@ -20,6 +21,6 @@
     "nodemailer": "^6.10.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.10"
   }
 }
