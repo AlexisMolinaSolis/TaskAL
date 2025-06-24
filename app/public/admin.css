@@ -1,3 +1,9 @@
+/*
+ * Selector universal para aplicar estilos base a todos los elementos.
+ * Establece el margen y el relleno a 0 para eliminar los espacios predeterminados del navegador.
+ * 'box-sizing: border-box;' asegura que el relleno y el borde se incluyan en el ancho y alto total del elemento.
+ * 'font-family' define una fuente predeterminada para todo el contenido.
+ */
 * {
     margin: 0;
     padding: 0;
@@ -5,369 +11,933 @@
     font-family: 'Arial', sans-serif;
 }
 
+/*
+ * Estilos para el cuerpo de la página (body).
+ * 'display: grid;' habilita el diseño de cuadrícula CSS.
+ * 'grid-template-rows: 60px 1fr;' define dos filas: la primera de 60px de alto (para el encabezado) y la segunda que ocupa el espacio restante.
+ * 'grid-template-columns: 250px 1fr;' define dos columnas: la primera de 250px de ancho (para la barra lateral) y la segunda que ocupa el espacio restante.
+ * 'height: 100vh;' hace que el cuerpo ocupe el 100% del alto de la ventana de visualización.
+ * 'overflow: hidden;' previene el desplazamiento del cuerpo de la página, permitiendo que los paneles internos se desplacen si es necesario.
+ */
 body {
     display: grid;
-    grid-template-rows: 60px 1fr;
-    grid-template-columns: 250px 1fr;
-    height: 100vh;
-    overflow: hidden;
+    grid-template-rows: 60px 1fr; /* Define el alto de las filas (encabezado, contenido principal) */
+    grid-template-columns: 250px 1fr; /* Define el ancho de las columnas (barra lateral, contenido principal) */
+    height: 100vh; /* Ocupa el 100% del alto de la ventana de visualización */
+    overflow: hidden; /* Evita el desplazamiento general de la página */
 }
 
-/* Header con logo */
+/*
+ * Estilos para el encabezado (header).
+ * 'grid-column: 1 / 3;' hace que el encabezado ocupe las dos columnas de la cuadrícula (desde la línea 1 hasta la 3).
+ * 'background-color' establece el color de fondo.
+ * 'display: flex;' y 'align-items: center;' centran verticalmente el contenido del encabezado.
+ * 'padding' añade espacio interno.
+ * 'border-bottom' añade un borde inferior para separación visual.
+ */
 .header {
-    grid-column: 1 / 3;
-    background-color: #2c3e50;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    border-bottom: 1px solid #34495e;
+    grid-column: 1 / 3; /* El encabezado se extiende por ambas columnas */
+    background-color: #2c3e50; /* Color de fondo oscuro */
+    display: flex; /* Habilita el diseño flexbox */
+    align-items: center; /* Centra los ítems verticalmente */
+    padding: 0 20px; /* Relleno horizontal */
+    border-bottom: 1px solid #34495e; /* Borde inferior para separación */
 }
 
+/*
+ * Estilos para el logo dentro del encabezado.
+ * 'height' establece una altura fija para el logo.
+ */
 .logo {
-    height: 40px;
+    height: 40px; /* Altura del logo */
 }
 
-/* Panel izquierdo */
+/*
+ * Estilos para la barra lateral (sidebar).
+ * 'background-color' y 'color' definen el fondo y el color del texto.
+ * 'display: flex;' y 'flex-direction: column;' organizan el contenido en una columna.
+ * 'overflow-y: auto;' permite el desplazamiento vertical si el contenido excede la altura.
+ */
 .sidebar {
-    background-color: #34495e;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+    background-color: #34495e; /* Color de fondo para la barra lateral */
+    color: white; /* Color de texto blanco */
+    display: flex; /* Habilita el diseño flexbox */
+    flex-direction: column; /* Organiza los ítems en una columna */
+    overflow-y: auto; /* Permite desplazamiento vertical si el contenido es demasiado largo */
 }
 
+/*
+ * Estilos para la sección del perfil de usuario en la barra lateral.
+ * 'padding' añade espacio interno.
+ * 'text-align: center;' centra el texto.
+ * 'border-bottom' añade un borde inferior.
+ * 'cursor: pointer;' cambia el cursor al pasar por encima, indicando que es interactivo.
+ */
 .user-profile {
-    padding: 20px;
-    text-align: center;
-    border-bottom: 1px solid #2c3e50;
-    cursor: pointer;
+    padding: 20px; /* Relleno alrededor del perfil */
+    text-align: center; /* Centra el texto */
+    border-bottom: 1px solid #2c3e50; /* Borde inferior */
+    cursor: pointer; /* Cambia el cursor a una mano */
 }
 
+/*
+ * Estilos para el avatar del usuario.
+ * 'width' y 'height' definen el tamaño.
+ * 'border-radius: 50%;' lo hace circular.
+ * 'object-fit: cover;' asegura que la imagen cubra el área sin distorsionarse.
+ * 'margin-bottom' añade espacio debajo.
+ * 'border' añade un borde de color.
+ */
 .user-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-    border: 3px solid #3498db;
+    width: 80px; /* Ancho del avatar */
+    height: 80px; /* Alto del avatar */
+    border-radius: 50%; /* Hace que la imagen sea circular */
+    object-fit: cover; /* Ajusta la imagen para cubrir el contenedor */
+    margin-bottom: 10px; /* Margen inferior */
+    border: 3px solid #3498db; /* Borde alrededor del avatar */
 }
 
+/*
+ * Estilos para el nombre de usuario.
+ * 'font-size' y 'margin-bottom' ajustan el tamaño y el espacio.
+ */
 .user-name {
-    font-size: 1.2em;
-    margin-bottom: 5px;
+    font-size: 1.2em; /* Tamaño de fuente para el nombre de usuario */
+    margin-bottom: 5px; /* Margen inferior */
 }
 
+/*
+ * Estilos para el correo electrónico del usuario.
+ * 'font-size' y 'color' ajustan el tamaño y el color.
+ */
 .user-email {
-    font-size: 0.8em;
-    color: #bdc3c7;
+    font-size: 0.8em; /* Tamaño de fuente más pequeño para el email */
+    color: #bdc3c7; /* Color de texto gris claro */
 }
 
+/*
+ * Estilos para las secciones de proyectos.
+ * 'padding' añade espacio interno.
+ */
 .projects-section {
-    padding: 15px;
+    padding: 15px; /* Relleno para las secciones de proyectos */
 }
 
+/*
+ * Estilos para el título de las secciones de proyectos.
+ * 'font-size', 'margin-bottom' y 'color' ajustan el estilo.
+ * 'display: flex;', 'justify-content: space-between;' y 'align-items: center;'
+ * distribuyen el texto y el botón "+" en los extremos.
+ */
 .projects-title {
-    font-size: 1em;
-    margin-bottom: 10px;
-    color: #bdc3c7;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    font-size: 1em; /* Tamaño de fuente */
+    margin-bottom: 10px; /* Margen inferior */
+    color: #bdc3c7; /* Color de texto gris claro */
+    display: flex; /* Habilita flexbox */
+    justify-content: space-between; /* Distribuye el espacio entre los ítems */
+    align-items: center; /* Centra los ítems verticalmente */
 }
 
+/*
+ * Estilos para el botón de añadir proyecto.
+ * Elimina el fondo y el borde predeterminados, define el color y el cursor.
+ */
 .add-project {
-    background: none;
-    border: none;
-    color: #3498db;
-    cursor: pointer;
-    font-size: 1.2em;
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    color: #3498db; /* Color de texto azul */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    font-size: 1.2em; /* Tamaño de fuente */
 }
 
+/*
+ * Estilos para la lista de proyectos.
+ * 'list-style: none;' elimina los puntos de la lista.
+ * 'max-height: 180px;' establece una altura máxima antes de que aparezca la barra de desplazamiento.
+ * 'overflow-y: auto;' habilita la barra de desplazamiento vertical si el contenido excede la altura máxima.
+ * 'background-color', 'padding' y 'border-radius' para el estilo visual del recuadro.
+ * 'margin-top' para separarlo visualmente del título.
+ */
 .project-list {
-    list-style: none;
+    list-style: none; /* Elimina los puntos de la lista */
+    max-height: 180px; /* Altura máxima antes de que aparezca el scroll */
+    overflow-y: auto; /* Habilita el scroll vertical si el contenido excede la altura máxima */
+    background-color: #2c3e50; /* Fondo del recuadro */
+    padding: 10px; /* Relleno interno del recuadro */
+    border-radius: 5px; /* Bordes redondeados del recuadro */
+    margin-top: 10px; /* Margen superior para separar del título */
 }
 
+/*
+ * Estilos para cada ítem de proyecto en la lista.
+ * 'padding', 'margin-bottom' y 'border-radius' ajustan la apariencia.
+ * 'cursor: pointer;' indica interactividad.
+ * 'display: flex;' y 'justify-content: space-between;' para alinear el nombre y quizás un icono.
+ */
 .project-item {
-    padding: 8px 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
+    padding: 8px 10px; /* Relleno interno */
+    margin-bottom: 5px; /* Margen inferior entre ítems */
+    border-radius: 4px; /* Bordes ligeramente redondeados */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    display: flex; /* Habilita flexbox */
+    justify-content: space-between; /* Distribuye el espacio */
 }
 
+/*
+ * Estilos al pasar el ratón por encima de un ítem de proyecto.
+ * Cambia el color de fondo para indicar interactividad.
+ */
 .project-item:hover {
-    background-color: #2c3e50;
+    background-color: #34495e; /* Color de fondo al pasar el ratón */
 }
 
+/*
+ * Estilos específicos para ítems de proyectos donde el usuario es el propietario.
+ * Añade un borde izquierdo de color azul.
+ */
 .project-item.owner {
-    border-left: 3px solid #3498db;
+    border-left: 3px solid #3498db; /* Borde izquierdo azul para proyectos propios */
 }
 
+/*
+ * Estilos específicos para ítems de proyectos donde el usuario es miembro.
+ * Añade un borde izquierdo de color verde.
+ */
 .project-item.member {
-    border-left: 3px solid #2ecc71;
+    border-left: 3px solid #2ecc71; /* Borde izquierdo verde para proyectos de miembro */
 }
 
-/* Área principal */
+/*
+ * Estilos para el área de contenido principal.
+ * 'background-color' define el fondo.
+ * 'padding' añade espacio interno.
+ * 'overflow-y: auto;' permite el desplazamiento vertical si el contenido excede la altura.
+ */
 .main-content {
-    background-color: #ecf0f1;
-    padding: 20px;
-    overflow-y: auto;
+    background-color: #ecf0f1; /* Color de fondo claro para el área principal */
+    padding: 20px; /* Relleno interno */
+    overflow-y: auto; /* Permite desplazamiento vertical */
 }
 
+/*
+ * Estilos para las opciones de vista (Lista, Kanban, Gantt).
+ * 'display: flex;' organiza las opciones en fila.
+ * 'margin-bottom' añade espacio debajo.
+ * 'background-color' y 'border-radius' para el contenedor.
+ * 'overflow: hidden;' asegura que los bordes redondeados se apliquen correctamente a los hijos.
+ */
 .view-options {
-    display: flex;
-    margin-bottom: 20px;
-    background-color: white;
-    border-radius: 5px;
-    overflow: hidden;
+    display: flex; /* Organiza las opciones en fila */
+    margin-bottom: 20px; /* Margen inferior */
+    background-color: white; /* Fondo blanco */
+    border-radius: 5px; /* Bordes redondeados */
+    overflow: hidden; /* Oculta el contenido que se desborda para mantener los bordes redondeados */
 }
 
+/*
+ * Estilos para cada opción de vista individual.
+ * 'padding' añade espacio interno.
+ * 'cursor: pointer;' indica interactividad.
+ * 'border-right' añade un borde derecho para separar las opciones.
+ */
 .view-option {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-right: 1px solid #ecf0f1;
+    padding: 10px 15px; /* Relleno interno */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    border-right: 1px solid #ecf0f1; /* Borde derecho para separar opciones */
 }
 
+/*
+ * Estilos para la opción de vista activa.
+ * Cambia el fondo y el color del texto para resaltar la opción seleccionada.
+ */
 .view-option.active {
-    background-color: #3498db;
-    color: white;
+    background-color: #3498db; /* Fondo azul para la opción activa */
+    color: white; /* Texto blanco para la opción activa */
 }
 
+/*
+ * Estilos para la última opción de vista.
+ * Elimina el borde derecho para que no haya un borde extra al final.
+ */
 .view-option:last-child {
-    border-right: none;
+    border-right: none; /* Elimina el borde derecho de la última opción */
 }
 
-/* Modales */
+/*
+ * Estilos para las ventanas modales.
+ * 'display: none;' inicialmente oculto.
+ * 'position: fixed;' lo posiciona respecto a la ventana de visualización.
+ * 'top: 0;', 'left: 0;', 'width: 100%;', 'height: 100%;' hacen que ocupe toda la pantalla.
+ * 'background-color: rgba(0, 0, 0, 0.5);' crea un fondo semitransparente oscuro.
+ * 'z-index: 1000;' asegura que esté por encima de otros elementos.
+ * 'justify-content: center;' y 'align-items: center;' centran el contenido del modal.
+ */
 .modal {
-    display: none;
-    position: fixed;
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Posición fija en la ventana */
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    justify-content: center;
+    width: 100%; /* Ocupa todo el ancho */
+    height: 100%; /* Ocupa todo el alto */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente oscuro */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra el contenido verticalmente */
+}
+
+/*
+ * Estilos para el contenido de la ventana modal.
+ * Se ha reducido el width y max-width para que el modal sea más pequeño.
+ * Se ha ajustado el padding para mantener el espacio interno.
+ * Aumentado el ancho para que la información tenga más espacio.
+ */
+.modal-content {
+    background-color: white; /* Fondo blanco para el contenido del modal */
+    padding: 20px; /* Ajustado el relleno interno */
+    border-radius: 8px; /* Ligeramente más redondeado */
+    width: 550px; /* Más ancho para dar espacio a la información */
+    max-width: 90%; /* Aumentado el ancho máximo, para responsividad */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    max-height: 90vh; /* Altura máxima para permitir scroll si el contenido es grande */
+    overflow-y: auto; /* Habilita el scroll vertical */
+}
+
+/*
+ * Estilos específicos para el contenido del modal de detalle de tarea.
+ * Se usa display grid para organizar la información de forma estructurada.
+ * grid-template-columns: repite 2 columnas con un tamaño mínimo de 120px que se ajusta automáticamente.
+ * gap: establece el espacio entre las celdas de la cuadrícula.
+ * Aumentado el min-width de las columnas para mejor distribución.
+ */
+.modal-content.task-detail {
+    display: grid; /* Usa un layout de cuadrícula */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Columnas responsivas, ajustado min-width */
+    gap: 10px 15px; /* Espacio vertical y horizontal entre los ítems de la cuadrícula, ajustado */
+    padding: 20px; /* Ajusta el relleno para este modal específico si es necesario */
+    /* Resetea la configuración de grid para los elementos directos del modal content si es necesario */
+    grid-column: 1 / -1; /* Permite que el modal-title y descripción se extiendan por todo el ancho */
+}
+
+
+/* Estilos para los elementos principales dentro del modal de detalles (Título, Descripción, Acciones)
+ * Asegura que ocupen todo el ancho dentro del grid del modal.
+ */
+#detail-task-title,
+#detail-task-description,
+#task-comments-section,
+#task-collaborators-section,
+#subtasks-section,
+.task-detail-actions,
+.task-detail > div:last-of-type { /* Para la sección de archivos adjuntos */
+    grid-column: 1 / -1; /* Ocupa todas las columnas del grid */
+    margin-bottom: 10px; /* Espacio debajo de cada sección principal, ajustado */
+}
+
+/* Ajuste específico para la descripción que es un párrafo */
+#detail-task-description {
+    margin-bottom: 15px; /* Más espacio debajo de la descripción, ajustado */
+}
+
+/* Estilos para el contenedor de la información detallada de la tarea */
+.task-details-info {
+    grid-column: 1 / -1; /* Asegura que este contenedor ocupe todo el ancho */
+    display: grid; /* Usa un grid interno para organizar los campos de información */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Dos columnas responsivas, ajustado min-width */
+    gap: 8px 15px; /* Espacio entre los elementos de información, ajustado */
+    margin-bottom: 15px; /* Espacio debajo del bloque de información, ajustado */
+    padding-bottom: 10px; /* Relleno inferior para separar del contenido siguiente, ajustado */
+    border-bottom: 1px solid #eee; /* Línea divisoria suave */
+}
+
+.task-details-info p {
+    margin: 0; /* Elimina márgenes predeterminados de los párrafos dentro del grid */
+    padding: 3px 0; /* Pequeño padding vertical para cada línea de info, ajustado */
+    font-size: 0.95em; /* Ligeramente más pequeño */
+}
+
+.task-details-info strong {
+    color: #555; /* Color ligeramente más oscuro para las etiquetas */
+    display: inline-block; /* Asegura que el strong ocupe su espacio y permita alineación */
+    min-width: 70px; /* Ancho mínimo para las etiquetas de "strong", ajustado */
+}
+
+
+/* Estilos para la sección de comentarios */
+#task-comments-section {
+    padding-top: 10px; /* Ajustado */
+    border-top: 1px solid #eee; /* Agrega un borde superior para separación visual */
+}
+
+#task-comments-list {
+    max-height: 120px; /* Altura máxima para la lista de comentarios, ajustado */
+    overflow-y: auto; /* Scroll vertical para los comentarios */
+    border: 1px solid #eee; /* Borde para la caja de comentarios */
+    border-radius: 4px;
+    padding: 8px; /* Ajustado */
+    margin-bottom: 8px; /* Ajustado */
+    background-color: #f9f9f9;
+}
+
+#task-comments-list .comment-item {
+    padding: 4px 0; /* Ajustado */
+    border-bottom: 1px dashed #e0e0e0;
+    margin-bottom: 4px; /* Ajustado */
+    font-size: 0.9em; /* Ligeramente más pequeño */
+}
+
+#task-comments-list .comment-item:last-child {
+    border-bottom: none;
+}
+
+
+#new-comment {
+    resize: vertical; /* Permite redimensionar verticalmente el textarea */
+    margin-bottom: 8px; /* Ajustado */
+    font-size: 0.9em; /* Ligeramente más pequeño */
+    padding: 6px; /* Ajustado */
+}
+
+#add-comment-btn {
+    width: auto; /* Permite que el botón se ajuste a su contenido */
+    padding: 5px 12px; /* Ajustado */
+    font-size: 0.9em; /* Ligeramente más pequeño */
+}
+
+/* Estilos para la sección de colaboradores asignados */
+#task-collaborators-section {
+    padding-top: 10px; /* Ajustado */
+    border-top: 1px solid #eee;
+}
+
+#collaborators-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+    gap: 5px; /* Espacio entre los colaboradores, ajustado */
+}
+
+#collaborators-list li {
+    background-color: #e0f7fa; /* Fondo suave para cada colaborador */
+    color: #00796b;
+    padding: 3px 7px; /* Ajustado */
+    border-radius: 3px;
+    font-size: 0.8em; /* Ajustado */
+}
+
+/* Estilos para archivos adjuntos */
+#attached-files-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0; /* Ajustado */
+}
+
+#attached-files-list li {
+    background-color: #e8f5e9;
+    padding: 3px 7px; /* Ajustado */
+    border-radius: 3px;
+    margin-bottom: 3px; /* Ajustado */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em; /* Ligeramente más pequeño */
+}
+
+#attached-files-list a {
+    color: #1b5e20;
+    text-decoration: none;
+}
+
+/* Estilos para subtareas */
+#subtasks-section {
+    padding-top: 10px; /* Ajustado */
+    border-top: 1px solid #eee;
+    /* Para colocar el botón junto al texto, la estructura HTML debe ser algo como:
+     * <div id="subtasks-section">
+     * <div class="subtasks-header">
+     * <h4>Subtareas</h4>
+     * <button class="btn btn-secondary" id="add-subtask-btn">Añadir Subtarea</button>
+     * </div>
+     * <ul id="subtasks-list">
+     * ...
+     * </ul>
+     * </div>
+     * Y luego se aplicarían los estilos a .subtasks-header
+     */
+}
+
+/* Nuevo estilo para el contenedor del título y el botón de subtareas */
+.subtasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Espacio debajo del encabezado de subtareas */
+}
+
+/* Ajuste del botón 'Añadir Subtarea' si se mueve junto al título */
+#add-subtask-btn {
+    margin-left: 0; /* Elimina el margen izquierdo si ya está en un flexbox con espacio entre */
+    flex-shrink: 0; /* Evita que el botón se encoja */
+}
+
+#subtasks-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0; /* Ajustado */
+}
+
+#subtasks-list li {
+    background-color: #f3e5f5;
+    padding: 5px 7px; /* Ajustado */
+    border-radius: 4px;
+    margin-bottom: 3px; /* Ajustado */
+    font-size: 0.85em; /* Ajustado */
+    display: flex;
     align-items: center;
 }
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 400px;
-    max-width: 90%;
+#subtasks-list li input[type="checkbox"] {
+    margin-right: 5px; /* Ajustado */
 }
 
-.modal-title {
-    margin-bottom: 20px;
-    color: #2c3e50;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #2c3e50;
-}
-
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #bdc3c7;
-    border-radius: 4px;
-}
-
-.form-actions {
+/* Estilos para las acciones del detalle de tarea */
+.task-detail-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 15px; /* Ajustado para un poco más de espacio */
+    gap: 10px; /* Espacio entre los botones de acción, ajustado */
+    padding-top: 10px; /* Ajustado */
+    border-top: 1px solid #eee;
 }
 
+/* Estilo para el botón de eliminar tarea (si tiene la clase btn-danger) */
+.btn-danger {
+    background-color: #e74c3c; /* Color rojo para eliminar */
+    color: white;
+}
+
+
+/*
+ * Estilos para el título de la ventana modal.
+ * 'margin-bottom' añade espacio debajo.
+ * 'color' define el color del texto.
+ */
+.modal-title {
+    margin-bottom: 15px; /* Margen inferior, ajustado */
+    color: #2c3e50; /* Color de texto oscuro */
+    font-size: 1.2em; /* Ligeramente más grande para títulos */
+}
+
+/*
+ * Estilos para grupos de formulario (label e input/select/textarea).
+ * 'margin-bottom' añade espacio entre grupos.
+ */
+.form-group {
+    margin-bottom: 12px; /* Margen inferior entre grupos de formulario, ajustado */
+}
+
+/*
+ * Estilos para las etiquetas de los campos de formulario.
+ * 'display: block;' hace que la etiqueta ocupe su propia línea.
+ * 'margin-bottom' añade espacio debajo de la etiqueta.
+ * 'color' define el color del texto.
+ */
+.form-group label {
+    display: block; /* La etiqueta ocupa una línea completa */
+    margin-bottom: 4px; /* Margen inferior, ajustado */
+    color: #2c3e50; /* Color de texto oscuro */
+    font-size: 0.95em; /* Ajustado */
+}
+
+/*
+ * Estilos para los campos de entrada de texto, select y áreas de texto.
+ * 'width: 100%;' los hace ocupar todo el ancho disponible.
+ * 'padding', 'border' y 'border-radius' ajustan la apariencia.
+ */
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; /* Ocupa el 100% del ancho disponible */
+    padding: 8px; /* Relleno interno, ajustado */
+    border: 1px solid #bdc3c7; /* Borde gris */
+    border-radius: 4px; /* Bordes redondeados */
+    font-size: 0.95em; /* Ajustado */
+}
+
+/*
+ * Estilos para el contenedor de acciones de formulario (botones).
+ * 'display: flex;' y 'justify-content: flex-end;' alinean los botones a la derecha.
+ * 'margin-top' añade espacio encima.
+ */
+.form-actions {
+    display: flex; /* Habilita flexbox */
+    justify-content: flex-end; /* Alinea los ítems al final (derecha) */
+    margin-top: 15px; /* Margen superior, ajustado */
+}
+
+/*
+ * Estilos base para los botones.
+ * 'padding', 'border', 'border-radius' y 'cursor' ajustan la apariencia.
+ * 'margin-left' añade espacio entre botones.
+ */
 .btn {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 10px;
+    padding: 8px 15px; /* Relleno interno, ajustado */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    margin-left: 10px; /* Margen izquierdo para separar botones, ajustado */
+    font-size: 0.95em; /* Ajustado */
 }
 
+/*
+ * Estilos para el botón principal.
+ * 'background-color' y 'color' definen el fondo y el texto.
+ */
 .btn-primary {
-    background-color: #3498db;
-    color: white;
+    background-color: #3498db; /* Fondo azul */
+    color: white; /* Texto blanco */
 }
 
+/*
+ * Estilos para el botón secundario.
+ * 'background-color' y 'color' definen el fondo y el texto.
+ */
 .btn-secondary {
-    background-color: #bdc3c7;
-    color: #2c3e50;
+    background-color: #bdc3c7; /* Fondo gris claro */
+    color: #2c3e50; /* Texto oscuro */
 }
 
-/* Notificaciones */
+/*
+ * Estilos para las notificaciones.
+ * 'position: fixed;' y 'bottom', 'right' lo posicionan en la esquina inferior derecha.
+ * 'background-color', 'color', 'padding', 'border-radius' y 'display: none;' (oculto por defecto) ajustan la apariencia.
+ * 'z-index: 1001;' asegura que esté por encima de otros elementos.
+ */
 .notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #2ecc71;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    display: none;
-    z-index: 1001;
+    position: fixed; /* Posición fija en la ventana */
+    bottom: 20px; /* A 20px del borde inferior */
+    right: 20px; /* A 20px del borde derecho */
+    background-color: #2ecc71; /* Fondo verde */
+    color: white; /* Texto blanco */
+    padding: 10px 20px; /* Relleno interno */
+    border-radius: 5px; /* Bordes redondeados */
+    display: none; /* Oculto por defecto */
+    z-index: 1001; /* Asegura que esté por encima de otros elementos, incluso modales */
 }
 
-/* Vista de proyectos */
+/*
+ * Estilos para la vista de proyectos.
+ * 'display: none;' inicialmente oculto.
+ * 'background-color', 'padding' y 'border-radius' ajustan la apariencia.
+ */
 .project-view {
-    display: none;
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
+    display: none; /* Oculto por defecto */
+    background-color: white; /* Fondo blanco */
+    padding: 20px; /* Relleno interno */
+    border-radius: 5px; /* Bordes redondeados */
 }
 
+/*
+ * Estilos para la vista de proyecto activa.
+ * 'display: block;' lo hace visible.
+ */
 .project-view.active {
-    display: block;
+    display: block; /* Visible cuando está activo */
 }
 
-/* Vista de lista */
-
+/*
+ * Estilos para cada ítem de tarea en la vista de lista.
+ * Se ha transformado en un "recuadro" individual con sombra.
+ * 'background-color' le da un fondo blanco.
+ * 'border' añade un borde sutil.
+ * 'border-radius' redondea las esquinas.
+ * 'box-shadow' añade una sombra para darle profundidad.
+ * 'margin-bottom' crea espacio entre tareas.
+ * 'display: flex;' y 'align-items: center;' mantienen la alineación de la casilla de verificación
+ * y el contenido de la tarea.
+ * Para el diseño columnar (Nombre, Estado, Fecha Límite, Prioridad), se necesitaría que el contenido
+ * de la tarea se genere con elementos HTML específicos (ej. `<span>` con clases para cada campo)
+ * y ajustar el flexbox o usar un grid interno.
+ */
 .task-item {
-    padding: 10px;
-    border-bottom: 1px solid #ecf0f1;
-    display: flex;
-    align-items: center;
+    background-color: white; /* Fondo blanco para la caja de la tarea */
+    border: 1px solid #ddd; /* Borde suave para el recuadro */
+    border-radius: 5px; /* Bordes redondeados para la caja */
+    padding: 10px; /* Relleno interno */
+    margin-bottom: 8px; /* Espacio entre tareas */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Sombra sutil para el efecto de recuadro */
+    display: flex; /* Mantiene el diseño flexbox */
+    align-items: center; /* Centra los ítems verticalmente */
+    cursor: pointer; /* Indica que la tarea es clicable */
+    /* Para el diseño columnar (Nombre, Estado, Fecha Límite, Prioridad),
+     * se asumiría que los elementos internos del .task-item (ej. divs o spans)
+     * se estilizan individualmente para alinearse como columnas usando flexbox o grid.
+     * Ejemplo de estructura esperada (manejada por JS):
+     * <div class="task-item">
+     * <input type="checkbox" class="task-checkbox">
+     * <span class="task-name">Nombre de la Tarea</span>
+     * <span class="task-status">Estado</span>
+     * <span class="task-dueDate">Fecha límite</span>
+     * <span class="task-priority">Prioridad</span>
+     * </div>
+     * La funcionalidad "abrir la información cuando se les de click" típicamente
+     * se manejaría con JavaScript, mostrando un modal (como #task-detail-modal)
+     * o expandiendo un área de detalles oculta dentro del propio .task-item.
+     */
 }
 
+/*
+ * Estilos para la casilla de verificación de la tarea.
+ * 'margin-right' añade espacio a su derecha.
+ */
 .task-checkbox {
-    margin-right: 10px;
+    margin-right: 10px; /* Margen derecho */
 }
 
-/* Vista Kanban */
+/*
+ * Estilos para la vista Kanban.
+ * 'display: flex;' organiza las columnas en fila.
+ * 'gap' añade espacio entre columnas.
+ * 'overflow-x: auto;' permite el desplazamiento horizontal si hay muchas columnas.
+ * 'padding-bottom' para espacio al final.
+ * COMENTARIO ADICIONAL: Para que la vista Kanban muestre columnas de "Pendiente", "En Proceso", "Completada" y "Cancelada",
+ * la estructura HTML dentro de `#kanban-view` debe incluir múltiples elementos con la clase `.kanban-column`,
+ * uno por cada estado. Por ejemplo:
+ * <div class="kanban-view">
+ * <div class="kanban-column">
+ * <div class="kanban-column-title">Pendiente</div>
+ * <!-- Tareas pendientes aquí -->
+ * </div>
+ * <div class="kanban-column">
+ * <div class="kanban-column-title">En Proceso</div>
+ * <!-- Tareas en proceso aquí -->
+ * </div>
+ * <!-- Más columnas para Completada y Cancelada -->
+ * </div>
+ */
 .kanban-view {
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    padding-bottom: 10px;
+    display: flex; /* Organiza las columnas en fila */
+    gap: 15px; /* Espacio entre columnas */
+    overflow-x: auto; /* Permite desplazamiento horizontal si hay muchas columnas */
+    padding-bottom: 10px; /* Relleno inferior */
 }
 
+/*
+ * Estilos para cada columna Kanban.
+ * 'min-width' define un ancho mínimo.
+ * 'background-color', 'border-radius' y 'padding' ajustan la apariencia.
+ * 'flex-shrink: 0;' evita que las columnas se encojan más allá de su `min-width`.
+ */
 .kanban-column {
-    min-width: 250px;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-    padding: 10px;
+    min-width: 250px; /* Ancho mínimo de la columna */
+    background-color: #f5f5f5; /* Fondo gris claro */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px; /* Relleno interno */
+    flex-shrink: 0; /* Evita que la columna se encoja para dejar espacio a otras */
 }
 
+/*
+ * Estilos para el título de la columna Kanban.
+ * 'font-weight', 'margin-bottom', 'padding-bottom' y 'border-bottom' ajustan la apariencia.
+ */
 .kanban-column-title {
-    font-weight: bold;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #ddd;
+    font-weight: bold; /* Texto en negrita */
+    margin-bottom: 10px; /* Margen inferior */
+    padding-bottom: 5px; /* Relleno inferior */
+    border-bottom: 1px solid #ddd; /* Borde inferior para separación */
 }
 
+/*
+ * Estilos para cada tarjeta de tarea en Kanban.
+ * Transforma la tarjeta en un recuadro individual con las propiedades visuales solicitadas.
+ * 'background-color' le da un fondo blanco.
+ * 'border' añade un borde sutil.
+ * 'border-radius' redondea las esquinas.
+ * 'box-shadow' añade una sombra para darle profundidad.
+ * 'margin-bottom' crea espacio entre tareas.
+ * 'cursor: pointer;' indica que la tarjeta es clicable.
+ */
 .kanban-task {
-    background-color: white;
-    padding: 8px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background-color: white; /* Fondo blanco para la caja de la tarea */
+    border: 1px solid #ddd; /* Borde suave para el recuadro */
+    border-radius: 5px; /* Bordes redondeados para la caja */
+    padding: 10px; /* Relleno interno */
+    margin-bottom: 8px; /* Espacio entre tareas */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Sombra sutil para el efecto de recuadro */
+    cursor: pointer; /* Indica que la tarjeta es clicable */
 }
 
-/* Vista Gantt */
+/*
+ * Estilos para la vista Gantt.
+ * 'overflow-x: auto;' permite el desplazamiento horizontal.
+ */
 .gantt-view {
-    overflow-x: auto;
+    overflow-x: auto; /* Permite desplazamiento horizontal */
 }
 
+/*
+ * Estilos para el contenedor del gráfico de Gantt.
+ * 'margin-top' añade espacio encima.
+ * 'height' define una altura fija.
+ */
 .gantt-container {
-    margin-top: 20px;
-    height: 400px;
+    margin-top: 20px; /* Margen superior */
+    height: 400px; /* Altura fija para el gráfico de Gantt */
 }
 
+/*
+ * Estilos para los controles del gráfico de Gantt (botones de zoom).
+ * 'margin-bottom' añade espacio debajo.
+ * 'display: flex;' y 'gap' organizan los botones en fila con espacio entre ellos.
+ */
 .gantt-controls {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 10px;
+    margin-bottom: 15px; /* Margen inferior */
+    display: flex; /* Habilita flexbox */
+    gap: 10px; /* Espacio entre los botones */
 }
 
+/*
+ * Estilos para los botones del gráfico de Gantt.
+ * 'padding', 'background-color', 'color', 'border', 'border-radius' y 'cursor' ajustan la apariencia.
+ */
 .gantt-btn {
-    padding: 5px 10px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
+    padding: 5px 10px; /* Relleno interno */
+    background-color: #3498db; /* Fondo azul */
+    color: white; /* Texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 3px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a una mano */
 }
 
-/* Invitaciones */
+/*
+ * Estilos para la sección de métodos de invitación.
+ * 'margin-top', 'border-top' y 'padding-top' ajustan la apariencia.
+ */
 .invite-methods {
-    margin-top: 15px;
-    border-top: 1px solid #ecf0f1;
-    padding-top: 15px;
+    margin-top: 15px; /* Margen superior */
+    border-top: 1px solid #ecf0f1; /* Borde superior */
+    padding-top: 15px; /* Relleno superior */
 }
 
+/*
+ * Estilos para cada método de invitación.
+ * 'margin-bottom' añade espacio entre métodos.
+ */
 .invite-method {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Margen inferior */
 }
 
+/*
+ * Estilos para el contenedor del código de invitación.
+ * 'display: flex;' y 'align-items: center;' para alinear el input y el botón.
+ */
 .invite-code {
-    display: flex;
-    align-items: center;
+    display: flex; /* Habilita flexbox */
+    align-items: center; /* Centra los ítems verticalmente */
 }
 
+/*
+ * Estilos para el input del código de invitación.
+ * 'flex-grow: 1;' hace que ocupe todo el espacio disponible.
+ * 'margin-right' añade espacio a su derecha.
+ */
 .invite-code input {
-    flex-grow: 1;
-    margin-right: 10px;
+    flex-grow: 1; /* Permite que el input crezca para ocupar espacio */
+    margin-right: 10px; /* Margen derecho */
 }
 
+/*
+ * Estilos para el botón de copiar.
+ * 'background-color', 'color', 'border', 'padding', 'border-radius' y 'cursor' ajustan la apariencia.
+ */
 .copy-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
+    background-color: #3498db; /* Fondo azul */
+    color: white; /* Texto blanco */
+    border: none; /* Sin borde */
+    padding: 5px 10px; /* Relleno interno */
+    border-radius: 3px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a una mano */
 }
 
+/*
+ * Estilos para el contenedor de la pantalla de inicio.
+ * 'display: flex;', 'justify-content: center;', 'align-items: center;' y 'height: 100vh;'
+ * centran el contenido vertical y horizontalmente en toda la pantalla.
+ * 'background-color' y 'font-family' ajustan el fondo y la fuente.
+ */
 .inicio-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Pantalla completa */
-    background-color: #fff; /* Fondo blanco o el que prefieras */
-    font-family: sans-serif;
-  }
-  
-  .texto-inicio {
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: left;
-    line-height: 1.2;
-  }
-  
-  .texto-inicio .signo {
-    font-size: 5rem;
-    vertical-align: middle;
-  }
-  
-  .botones-inicio {
-    margin-left: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .boton-opcion {
-    background: none;
-    border: none;
+    display: flex; /* Habilita flexbox */
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra el contenido verticalmente */
+    height: 100vh; /* Ocupa el 100% del alto de la ventana de visualización */
+    background-color: #fff; /* Fondo blanco */
+    font-family: sans-serif; /* Fuente sans-serif */
+}
+
+/*
+ * Estilos para el texto grande de la pantalla de inicio.
+ * 'font-size', 'font-weight', 'text-align' y 'line-height' ajustan el estilo del texto.
+ */
+.texto-inicio {
+    font-size: 5rem; /* Tamaño de fuente grande */
+    font-weight: bold; /* Negrita */
+    text-align: left; /* Alineación a la izquierda */
+    line-height: 1.2; /* Altura de línea */
+}
+
+/*
+ * Estilos para el signo de interrogación dentro del texto de inicio.
+ * Ajusta el tamaño de fuente y la alineación vertical.
+ */
+.texto-inicio .signo {
+    font-size: 5rem; /* Tamaño de fuente grande */
+    vertical-align: middle; /* Alineación vertical media */
+}
+
+/*
+ * Estilos para el contenedor de botones de la pantalla de inicio.
+ * 'margin-left' añade espacio a la izquierda.
+ * 'display: flex;' y 'flex-direction: column;' organizan los botones en columna.
+ * 'gap' añade espacio entre botones.
+ */
+.botones-inicio {
+    margin-left: 3rem; /* Margen izquierdo */
+    display: flex; /* Habilita flexbox */
+    flex-direction: column; /* Organiza los ítems en una columna */
+    gap: 1.5rem; /* Espacio entre los botones */
+}
+
+/*
+ * Estilos para los botones de opción en la pantalla de inicio.
+ * Elimina el fondo y el borde predeterminados, define el color, tamaño de fuente y cursor.
+ * 'text-align: left;' y 'padding: 0;' ajustan la alineación y el relleno.
+ */
+.boton-opcion {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    color: #f15b5b; /* Color rojo suave */
+    font-size: 1.2rem; /* Tamaño de fuente */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    text-align: left; /* Alineación de texto a la izquierda */
+    padding: 0; /* Sin relleno */
+}
+
+/*
+ * Estilos al pasar el ratón por encima de los botones de opción.
+ * Añade un subrayado para indicar interactividad.
+ */
+.boton-opcion:hover {
+    text-decoration: underline; /* Subraya el texto al pasar el ratón */
+}
+
+/*
+ * Estilos específicos para el signo de interrogación grande en la pantalla de inicio.
+ * similar a boton-opcion pero con un tamaño de fuente mucho mayor.
+ */
+.signo {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
     color: #f15b5b; /* Rojo suave */
-    font-size: 1.2rem;
-    cursor: pointer;
-    text-align: left;
-    padding: 0;
-  }
-  
-  .boton-opcion:hover {
-    text-decoration: underline;
-  }
-  
+    font-size: 20rem; /* Tamaño de fuente muy grande */
+    text-align: left; /* Alineación de texto a la izquierda */
+    padding: 0; /* Sin relleno */
+}

@@ -6,12 +6,15 @@
     <title>Registro</title>
     <link rel="stylesheet" href="style.css">
     <script src="register.js" defer></script>
-</head>
+
+  </head>
 <body>
     <main>
     <div class="auth-container">
         <div class="auth-card">
             <h1>Crear Cuenta</h1>
+
+
             <form id="registerForm">
                 <div class="form-group">
                   <label for="name" class="sr-only">Nombre</label>
@@ -29,7 +32,6 @@
                   <label for="confirmPassword" class="sr-only">Confirmar Contraseña</label>
                     <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirmar Contraseña*" required>
                      
-
                 </div>
                 <button type="submit" class="btn">Registrarse</button>
                 <div id="errorMessage" class="error-Message"></div> <div id="successMessage" class="success-message"></div> 
@@ -37,10 +39,54 @@
                 <p class="error-message ">ERROR AL REGISTRARSE</p>
                 
             </form>
+            
+            
             <p class="auth-switch">¿Ya tienes cuenta? <a href="/">Inicia sesión</a></p>
         </div>
     </div>
  
 </main>
+<!--
+<script>
+
+const forma=document.querySelector('#registerForm');
+const usuario = document.querySelector('#name');
+const correo = document.querySelector('#email')
+
+const plantillaMail = `<div class="container">
+      <h1>¡Hola ${usuario}!</h1>
+      <p>Gracias por registrarte en PuntoJson. Estamos emocionados de tenerte con nosotros.</p>
+      <p>Para comenzar a usar tu cuenta, por favor verifica tu dirección de email:</p>
+      
+      <a href="$verificationLink" class="button">
+        Verificar mi cuenta
+      </a>
+      
+      <p>Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+      <p style="word-break: break-all; background: #eee; padding: 10px; border-radius: 4px;">
+        $verificationLink
+      </p>
+
+      <div class="footer">
+        <p>Si no solicitaste este registro, por favor ignora este mensaje.</p>
+        <p>Atentamente,<br><strong>El equipo de PuntoJson</strong></p>
+      </div>
+
+    </div>`;
+function sendMsg(e){
+	e.preventDefault();
+		Email.send({
+			SecureToken:"omyn ukhr gcdk furp",
+			To:correo.value,
+			From:'molinasolisalexisjesus@gmail.com',
+			Subject:"Verificación de Cuenta TaskAl",
+			Body:toString(plantillaMail)
+		}).then(
+		  message=>alert(message)
+		);
+	}
+forma.addEventListener('submit',sendMsg);
+</script>
+<script src="https://smtpjs.com/v3/smtp.js"></script>-->
 </body>
 </html>

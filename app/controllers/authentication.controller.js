@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import pool from '../config/database.js'; // Importa la conexión a la base de datos
 // import { enviarMailVerificacion } from "./../services/mail.service.js";
 
+import nodemailer from "nodemailer";
+
 dotenv.config();
 
 async function login(req, res) {
@@ -108,6 +110,55 @@ async function register(req, res) {
     );
 
 //aqui lo de mail
+    const plantillaMail = `<div class="container">
+      <h1>¡Hola ${nombre}!</h1>
+      <p>Gracias por registrarte en PuntoJson. Estamos emocionados de tenerte con nosotros.</p>
+      <p>Para comenzar a usar tu cuenta, por favor verifica tu dirección de email:</p>
+      
+      <a href="$verificationLink}" class="button">
+        Verificar mi cuenta
+      </a>
+      
+      <p>Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+      <p style="word-break: break-all; background: #eee; padding: 10px; border-radius: 4px;">
+        $verificationLink}
+      </p>
+
+      <div class="footer">
+        <p>Si no solicitaste este registro, por favor ignora este mensaje.</p>
+        <p>Atentamente,<br><strong>El equipo de PuntoJson</strong></p>
+      </div>
+
+    </div>`;
+
+    // Create a transporter object using the SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com', // e.g., smtp.gmail.com, smtp.mailtrap.io
+        port: 587, // or 465 for SSL
+        secure: false, // true for 465, false for other ports (like 587)
+        auth: {
+            user: 'molinasolisalexisjesus@gmail.com',
+            pass: 'omyn ukhr gcdk furp'
+        }
+    });
+
+    // Configure the mailoptions object
+    let mailOptions = {
+        from: 'molinasolisalexisjesus@gmail.com',
+        to: emailNormalizado,
+        subject: 'Verificación de Cuenta TaskAl',
+        text:plantillaMail
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log('Error:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+
 
 
     return res.status(201).send({

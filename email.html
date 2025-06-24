@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <style>
-      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+      /*body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }*/
       .container { background-color: #f9f9f9; padding: 30px; border-radius: 5px; border: 1px solid #ddd; }
       h1 { color: #2c3e50; }
       .button { 
@@ -11,6 +11,154 @@
         color: white; text-decoration: none; border-radius: 4px; margin: 20px 0; 
       }
       .footer { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; }
+      *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(90deg,#0df666 0%,#0df666 30%,#06b666 30%,#06b666 100%);}
+.btn-wsp{position:fixed;width:66px;height:66px;line-height:55px;bottom:90px;right:30px;background:#0df053;color:#fff;border-radius:50px;text-align:center;font-size:30px;box-shadow:0px 1px 10px rgba(0,0,0,0.3);z-index:100;text-decoration:none;}
+.btn-wsp:hover{text-decoration:none;color:#0df053;background:#fff;}
+.contactUs{z-index:1;top:100px;position:relative;width:100%;padding:40px 100px;}
+.contactUs .title{height:auto;justify-content:center;align-items:center;font-size:1.6em;}
+.contactUs .title h2{ color:#fff;font-weight:600;}
+.contactBox{position:relative;display:grid;
+	grid-template-columns:2fr 1fr;
+	grid-template-rows:5fr 4fr;
+	grid-template-areas: "form info"
+						 "form map";
+	grid-gap:20px;}
+.contact{padding:40px;background:#fff;padding:40px;background:#fff;box-shadow:0 5px 35px rgba(0,0,0,0.15);margin-top:20px;}
+.form{grid-area:form;}
+.info{grid-area:info;}
+.map{grid-area:map;}
+
+.contact h3{color:#0e3959;font-weight:500;font-size:1.3em;margin-bottom:10px;}
+
+.formBox{position:relative;width:100%;}
+.form .row50{display:flex;gap:20px;}
+.inputBox{display:flex;flex-direction:column;margin-bottom:9px;width:50%;}
+.form .row100 .inputBox{width:100%;}
+.inputBox span{color:#18b7ff;margin-top:9px;margin-bottom:6px;font-weight:600;}
+.inputBox input{padding:10px;font-size:1.1em;outline:none;border:1px solid #333;}
+.inputBox textarea{width:100%;padding:10px;font-size:1.1em;outline:none;border:1px solid #333;resize:none;min-height:220px;margin-bottom:9px;}
+.inputBox input[type="submit"]{background:#ff578b;color:#fff;border:none;font-size:1.1em;max-width:666px;font-weight:600;cursor:pointer;padding:14px 15px;}
+.inputBox input[type="submit"]:hover{background:#fff;color:#232323;transition:1.666s;}
+.inputBox::placeholder{color:#999;}
+.info{background:#0e3959;}
+.info h3{color:#fff;}
+
+.info .infoBox div{background:none;display:flex;align-items:center;margin-bottom:9px;}
+.info .infoBox div span{background:none;min-width:40px;height:40px;color:#fff;display:flex;justify-content:center;align-items:center;font-size:1.5em;border-radius:50%;margin-right:15px;}
+.info .infoBox div p{background:none;color:#fff;font-size:1.1em;}
+.info .infoBox div a{background:none;color:#fff;text-decoration:none;font-size:1.1em;}
+
+.info .infoBox div{display:flex;align-items:center;margin-bottom:9px;}
+.info .infoBox div span{min-width:40px;height:40px;color:#fff;background:#18b7ff;display:flex;justify-content:center;align-items:center;font-size:1.5em;border-radius:50%;margin-right:15px;}
+.info .infoBox div p{color:#fff;font-size:1.1em;}
+.info .infoBox div a{color:#fff;text-decoration:none;font-size:1.1em;}
+.socialesContact{margin-top:40px;display:flex;}
+.socialesContact li{list-style:none;margin-right:15px;}
+.socialesContact li a{color:#fff;font-size:2em;color:#ccc;}
+.socialesContact li a:hover{color:#fff;transform:translateY(-40px);}
+.map{padding:0;}
+.map iframe{width:100%;height:100%;}
+#sombra{border:3px solid;padding:10px;box-shadow:5px 10px #888888;}
+.collapsible{background:#777;align-items:center;color:#fff;cursor:pointer;padding:15px;width:100%;height:auto;border:none;text-align:center;/*outline:none;*/font-size:1.1em;font-weight:100;}
+.active, .collapsible:hover{background:#323232;color:#32ff00;}
+.collapsible:after{content:'\002B';color:#ab00;font-weight:300;float:right;margin-left:5px;}
+.active:after{content:'\2212';}
+.content__{padding:3px 33px;max-height:0;height:auto;overflow:hidden;transition:max-height 0.6s ease-out-all;color:#fff;margin:0;background:#fff;opacity:13;word-spacing:4px;background-repeat:no-repeat;background-attachment:scroll;background-position:top center;background-repeat:no-repeat;}
+/*element.style{max-height:666px;}*/
+.menu ul{min-height:0;height:auto;}
+.menu li{list-style:none;color:#00ff;padding:9px;font-size:1.1em;font-weight:100;letter-spacing:1px;}
+.colores{width:90%;height:auto;background-color:#9966FF;animation-name:colorido;animation-duration:12s;}
+@keyframes colorido{
+  from {background:#00ff;}
+  to {background:#ff00;}
+}
+#main-header{z-index:100;background:none;color:#fff;height:auto;width:100%;left:0;top:0;position:fixed; display:block;animation-name:colorido;animation-duration:6.666s;}
+#main-header a{color:#fff;text-decoration:none;}
+.logo{padding:1px;transition:transform .2s;width:90px;height:90px;margin:0 auto;}
+.logo:hover{border-radius:50%;
+    -webkit-border-radius:50%;box-shadow:0px 0px 15px 15px #ec731e;
+    -webkit-box-shadow: 0px 0px 15px 15px #ec731e;transform:rotate(360deg);
+    -webkit-transform:rotate(360deg);}
+#logo-header{float:left;padding:15px 0 0 20px;text-decoration:none;}
+#logo-header:hover{color:#0b76a6;}
+#logo-header .site-name{display:block;font-weight:700;font-size:1.2em;}
+#logo-header .site-desc{display:block;font-weight:300;font-size:0.8em;color:#999;}
+.logo{padding:1px;transition:transform .2s;width:90px;height:90px;margin:0 auto;}
+nav{float:right;position:relative;}
+nav ul{align-items:right;right:0;margin:0;padding:0;list-style:none;padding-right:20px;}
+nav ul li{display:inline-block;width:auto;line-height:80px;list-style:none;margin-left:20px;}
+nav ul li a{padding:6px 15px;text-decoration:none;color:#094b65;border-radius:20px;}
+nav ul li a:hover,
+nav ul li a.activeH{background:#094b65;color:#fff;}
+nav ul li a.activeH:hover{background:#323232;}
+footer{position:relative;width:100%;background:green;min-height:100px;padding:20px 0px;display:flex;justify-content:center;align-items:center;flex-direction:column;}
+footer .social_icon,
+footer .menu_f{position:relative;display:flex;justify-content:center;align-items:center;margin:10px 0;flex-wrap:wrap;}
+footer .social_icon li,
+footer .menu_f li{list-style:none;}
+footer .social_icon li a{font-size:2em;color:#fff;margin:0 10px;display:inline-block;transition:0.6s;opacity:0.5;}
+footer .social_icon li a:hover{transform:translateY(-10px);opacity:1;}
+footer .menu_f li a{font-size:1.2em;color:#fff;margin:0 10px;display:inline-block;transition:0.5s;text-decoration:none;opacity:0.5;}
+footer .menu_f li a:hover{opacity:1;transform:translateY(-15px);}
+footer p{text-align:center;margin-top:15px;margin-bottom:15px;font-size:1.1em;}
+footer .waves{position:relative;top:-100px;left:0;width:100%;}
+footer .wave{position:abolute;top:-100px;left:0;width:100%;height:100px;background:url('pasto.png');background-size:1000px 100px;}
+footer .wave#wave1{position:abolute;z-index:1000;opacity:1;bottom:0;animation:animateWave 6.666s linear infinite;}
+footer .wave#wave2{position:abolute;z-index:999;opacity:0.5;bottom:15px;animation:animateWave_02 6.666s linear infinite;}
+.copyrightText{width:100%;height:auto;min-height:200px;background:#181818;padding:8px 100px;text-align:center;color:#fff;align-items:center;align-content:center;}
+.grid-container{margin-top:9px;display:grid;grid-template-columns:auto 66% auto;grid-gap:15px;}
+.grid-container a{text-decoration:none;color:#fff;}
+.grid-container p{padding:6px;letter-spacing:3px;font-size:1.1em;font-weight:300;color:#fff;}
+.grid-container marquee{font-size:21px;letter-spacing:1px;font-weight:100;margin:3px;height:auto;color:gold;}
+.grid-container>div{padding:12px;}
+.copyrightText a{text-decoration:none;background:none;}
+.copyrightText img{height:66px;width:66px;}
+
+#formaMP,#nosotros{background:#fff;overflow:scroll;z-index:100;width:90%;margin:66px 5%;height:100%;padding:17px;border-radius:8px;overflow-x:hidden;}
+#nosotros{background:#fff;z-index:100000;}
+.headerForm{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px;}
+#formaMP span img{width:99px;height:99px;left:3px;top:8px;}
+#formaMP h1{top:1px;color:#415;font-family:Comic;font-size:1.1em;font-style:bold;font-weight:300;letter-spacing:3px;text-transform:uppercase;padding:8px;text-align:center;}
+#closeMP{top:17px;font-size:2.5em;color:#040105;font-weight:900;font-family:arial;opacity:0.666;cursor:pointer;}
+.formaMercadoPago{display:grid;grid-template-columns:49% 49%;grid-gap:auto;grid-template-rows:99px;align-content:center;align-items:center;margin:auto;}
+.formaMercadoPago>div{padding:17px;}
+.formaMercadoPago label{color:#415px;font-size:1em;font-family:arial;letter-spacing:3px;font-weight:100;}
+.formaMercadoPago input,
+.formaMercadoPago select{color:#415px;font-size:1em;font-family:arial;letter-spacing:3px;font-weight:100;background:#fff;width:100%;border-radius:3px;height:45px;}
+#closeUs{font-size:1.7em;color:#415;font-weight:600;}
+#closeUs:hover{color:#040105;cursor:pointer;}
+.modal{display:none;position:fixed;z-index:1;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.4);padding-top:60px;}
+.modal-content{background:#fefefe;margin:5% auto 15%;border:1px solid #888;width:69%;}
+.texto_nosotros{color:#040105;text-align:justify;font-weight:500;font-size:1em;letter-spacing:1px;padding:9px 17px;}
+
+
+.footer_map{background:#daff;padding:0;margin:0;width:100%;height:auto;max-height:415px;}
+.footer_map iframe{padding:0;margin:0;width:100%;height:100%;}
+@media(max-width:971px){
+	body{overflow-X:hidden;}
+	footer{padding:40px;flex-direction:column;}
+	footer.waves{margin:0;width:100%;}
+	footer.wave{margin:0;width:100%;background-size:100%;}
+	footer.wave#wave1{margin:0;width:100%;}
+	.copyrightText{padding:8px 40px;flex-direction:column;}
+	.grid-container{flex-direction:column;}
+	.map{padding:0;}
+}
+@media(max-width:991px){
+	body{background:#03a9f5;}
+	.contactUs{padding:20px;}
+	.contactBox{
+		grid-template-columns:1fr;
+		grid-template-rows:auto;
+		grid-template-areas:"form"
+							"info"
+							"map";}
+	.map{min-height:300px;padding:0;}
+	.formBox .row50{display:flex;gap:0;flex-direction:column;}
+	.inputBox{width:100%;}
+	.contact{padding:30px;}
+}
     </style>
   </head>
   <body>
@@ -27,11 +175,82 @@
       <p style="word-break: break-all; background: #eee; padding: 10px; border-radius: 4px;">
         ${verificationLink}
       </p>
-      
+
       <div class="footer">
         <p>Si no solicitaste este registro, por favor ignora este mensaje.</p>
         <p>Atentamente,<br><strong>El equipo de PuntoJson</strong></p>
       </div>
+
     </div>
+    <div class="contactUs">
+	
+	<div class="contactBox">
+		<div class="contact form">
+			<h3>Envianos un Mensaje</h3>
+		<form class="contactoGMAIL">
+			<div class="formBox">
+				<div class="row50">
+				<div class="inputBox">
+					<span>Como te llamas</span>
+					<input class="name" type="text" placeholder="Como te llamas" required/>
+				</div>
+				<div class="inputBox">
+					<span>Apellido</span>
+					<input class="lname" type="text" placeholder="Como te apellidas(Opcional)"/>
+				</div>
+				</div>
+				
+				<div class="row50">
+    				<div class="inputBox">
+    					<span>Email</span>
+    					<input class="mail" type="email" placeholder="tuu@algo.com" required/>
+    				</div>
+    				<div class="inputBox">
+    					<span>Telefono</span>
+    					<input class="tel" type="number" placeholder="Numero para seguimiento (opcional)"/>
+    				</div>
+				</div>
+				<div class="row100">
+    				<div class="inputBox">
+    					<span>Tu Mensaje</span>
+    					<textarea class="msg" placeholder="Como te podemos ayudar" required></textarea>
+    				</div>
+				</div>
+				<div class="row100">
+    				<div class="inputBox">
+    					<input type="submit" value="ENVIAR"/>
+    				</div>
+				</div>
+			</div>
+		</form>
+		</div>
+		<div class="contact info">
+			<h3>Contact Info</h3>
+			<div class="infoBox">
+			<div>
+			<span><ion-icon name="location-outline"></ion-icon></span>
+			<p>Iztapalapa, col. El molino, Damiana, Huacepil<br>CDMX</p>
+			</div>
+			<div>
+			<span><ion-icon name="mail-outline"></ion-icon></span>
+			    <a href="mailto:matprimas.tocha.loc33@gmail.com">matprimas.tocha.loc33@gmail.com</a>
+			</div>
+			<div>
+			<span><ion-icon name="call-outline"></ion-icon></span>
+			    <a href="tel:+525517971706">+52 55 35 14 36 31</a>
+			</div>
+			<ul class="socialesContact">
+				<li><a target="_blank" href="<?php echo $facebook;?>"><ion-icon name="logo-facebook"></ion-icon></a></li>
+				<li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+				<li><a target="_blank" href="<?php echo $t_mercadoShops;?>"><ion-icon name="logo-mercadolibre"></ion-icon></a></li>
+			</ul>
+			</div>
+		</div>
+		<div class="contact map">
+			<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3765.788628418763!2d-99.06939878578389!3d19.29155605017614!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce03c248d73bdb%3A0xef38793f1e73fa6e!2sMateriasPrimas%20Tocha!5e0!3m2!1ses-419!2smx!4v1636081671822!5m2!1ses-419!2smx" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+		</div>
+	</div>
+</div>
+
   </body>
   </html>

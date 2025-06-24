@@ -1,157 +1,177 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Proyectos</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
-    <link rel="stylesheet" href="/admin.css">
-    <script src="admin.js"></script>
-   </head>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
 <body>
-    <!-- Header con logo -->
     <header class="header">
         <img src="/taskal.jpg" alt="Logo" class="logo">
     </header>
-    
-    <!-- Panel izquierdo -->
+
     <aside class="sidebar">
-        <!-- Info usuario-->
-        <div class="user-profile">
-            <h3 class="user-name">Nombre Usuario</h3>
-            <p class="user-email">usuario@example.com</p>
+        <!-- Se añadió el ID 'userProfileArea' para que sea clickable en JS -->
+        <div class="user-profile" id="userProfileArea">
+            <h3 class="user-name" id="userNameDisplay">Cargando...</h3>
+            <p class="user-email" id="userEmailDisplay">cargando@example.com</p>
         </div>
-        
+
         <div class="projects-section">
-            <h3 class="projects-title">
-                Mis Proyectos
-                <button class="add-project" id="add-project-btn">+</button>
-            </h3>
+            <h3 class="projects-title">Mis Proyectos<button class="add-project" id="add-project-btn">+</button></h3>
             <ul class="project-list" id="owned-projects">
-                <!-- Proyectos que el usuario ha creado -->
-                <li class="project-item owner">Proyecto 1</li>
-                <li class="project-item owner">Proyecto 2</li>
+                <li class="no-projects">No has creado proyectos aún.</li>
             </ul>
         </div>
-        
+
         <div class="projects-section">
             <h3 class="projects-title">Proyectos en los que participo</h3>
             <ul class="project-list" id="member-projects">
-                <!-- Proyectos en los que el usuario es miembro -->
-                <li class="project-item member">Proyecto A</li>
-                <li class="project-item member">Proyecto B</li>
+                <li class="no-projects">No eres miembro de otros proyectos.</li>
             </ul>
         </div>
     </aside>
-    
-    <!-- Área principal -->
+
     <main class="main-content">
-        <div class="inicio-container">
+        <div class="inicio-container" id="inicio-container">
             <div class="texto-inicio">
-              <p>Qué<br>quieres<br>hacer<br>hoy<br><span class="signo">?</span></p>
+                <p>Qué<br>quieres<br>hacer<br>hoy</p>
+            </div>
+            <div class="signo">
+                <p>?</p>
             </div>
             <div class="botones-inicio">
-              <button class="boton-opcion">Crear un proyecto</button>
-              <button class="boton-opcion">Unirse a un equipo</button>
+                <button class="boton-opcion" id="create-project-from-inicio">Crear un proyecto</button>
+                <button class="boton-opcion" id="join-team-from-inicio">Unirse a un equipo</button>
             </div>
-          </div>          
+        </div>
 
-        <div class="view-options">
-            <div class="view-option" data-view="list">Lista</div>
-            <div class="view-option" data-view="kanban">Kanban</div>
-            <div class="view-option" data-view="gantt">Gantt</div>
-        </div>
-        
-        <div class="project-view" id="list-view">
-            <h2>Proyecto Seleccionado - Vista de Lista</h2>
-            <button class="btn btn-primary" id="add-task-btn">Añadir Tarea</button>
-            
-            <div class="list-view">
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span>Tarea 1 - Descripción breve</span>
+        <div class="project-dashboard" id="project-dashboard" style="display: none;">
+            <h2 id="selectedProjectNameHeader">Nombre del Proyecto</h2>
+            <button class="btn btn-primary" id="invite-users-btn">Invitar Usuarios</button>
+
+            <div class="view-options">
+                <div class="view-option active" data-view="list">Lista</div>
+                <div class="view-option" data-view="kanban">Kanban</div>
+                <div class="view-option" data-view="gantt">Gantt</div>
+            </div>
+
+            <div class="project-views-container">
+                <div class="project-view active" id="list-view">
+                    <h3>Tareas</h3>
+                    <button class="btn btn-primary" id="add-task-btn">Añadir Tarea</button>
+                    <div class="list-filters">
+                        <select id="filter-status">
+                            <option value="">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en-proceso">En Proceso</option>
+                            <option value="completada">Completada</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                        <select id="filter-priority">
+                            <option value="">Todas las prioridades</option>
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                        <button class="btn btn-secondary" id="apply-filters-btn">Aplicar Filtros</button>
+                    </div>
+                    <div class="tasks-list-items">
+                        <p class="no-tasks">No hay tareas en este proyecto.</p>
+                    </div>
                 </div>
-                <div class="task-item">
-                    <input type="checkbox" class="task-checkbox">
-                    <span>Tarea 2 - Descripción breve</span>
+
+                <div class="project-view" id="kanban-view">
+                    <h3>Kanban</h3>
+                    <button class="btn btn-primary" id="add-task-kanban-btn">Añadir Tarea</button>
+                    <div class="kanban-view-columns"> </div>
+                </div>
+
+                <div class="project-view" id="gantt-view">
+                    <h3>Gantt</h3>
+                    <div class="gantt-controls">
+                        <button class="gantt-btn" id="zoom-in">+ Zoom</button>
+                        <button class="gantt-btn" id="zoom-out">- Zoom</button>
+                        <button class="gantt-btn" id="fit-view">Ajustar Vista</button>
+                    </div>
+                    <div class="gantt-container" id="gantt-chart">
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="project-view" id="kanban-view">
-            <h2>Proyecto Seleccionado - Vista Kanban</h2>
-            <button class="btn btn-primary" id="add-task-kanban-btn">Añadir Tarea</button>
-            
-            <div class="kanban-view">
-                <div class="kanban-column">
-                    <div class="kanban-column-title">Por hacer</div>
-                    <div class="kanban-task">Tarea 1</div>
-                    <div class="kanban-task">Tarea 2</div>
-                </div>
-                <div class="kanban-column">
-                    <div class="kanban-column-title">En progreso</div>
-                    <div class="kanban-task">Tarea 3</div>
-                </div>
-                <div class="kanban-column">
-                    <div class="kanban-column-title">Completado</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="project-view" id="gantt-view">
-            <h2>Proyecto Seleccionado - Vista Gantt</h2>
-            <div class="gantt-controls">
-                <button class="gantt-btn" id="zoom-in">+ Zoom</button>
-                <button class="gantt-btn" id="zoom-out">- Zoom</button>
-                <button class="gantt-btn" id="fit-view">Ajustar Vista</button>
-            </div>
-            <div class="gantt-container" id="gantt-chart"></div>
         </div>
     </main>
-    
-    <!-- Modal para crear proyecto -->
+
     <div class="modal" id="project-modal">
         <div class="modal-content">
             <h3 class="modal-title">Crear Nuevo Proyecto</h3>
-            <div class="form-group">
-                <label for="project-name">Nombre del Proyecto</label>
-                <input type="text" id="project-name" placeholder="Nombre del proyecto">
-            </div>
-            <div class="form-group">
-                <label for="project-description">Descripción</label>
-                <textarea id="project-description" rows="3" placeholder="Descripción del proyecto"></textarea>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-secondary" id="cancel-project">Cancelar</button>
-                <button class="btn btn-primary" id="save-project">Crear Proyecto</button>
-            </div>
+            <!-- Se envolvió en un formulario y se añadió ID para JavaScript -->
+            <form id="createProjectForm">
+                <div class="form-group">
+                    <label for="project-name">Nombre del Proyecto</label>
+                    <input type="text" id="project-name" name="projectName" placeholder="Nombre del proyecto" required>
+                </div>
+                <div class="form-group">
+                    <label for="project-description">Descripción</label>
+                    <textarea id="project-description" name="projectDescription" rows="3"
+                        placeholder="Descripción del proyecto"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="project-ini-date">Fecha de Inicio</label>
+                    <input type="date" id="project-ini-date" name="projectIniDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="project-ven-date">Fecha de Vencimiento</label>
+                    <input type="date" id="project-ven-date" name="projectVenDate" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-project">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="save-project">Crear Proyecto</button>
+                </div>
+            </form>
         </div>
     </div>
-    
-    <!-- Modal para crear tarea -->
+
     <div class="modal" id="task-modal">
         <div class="modal-content">
             <h3 class="modal-title">Añadir Nueva Tarea</h3>
             <div class="form-group">
                 <label for="task-title">Título</label>
-                <input type="text" id="task-title" placeholder="Título de la tarea">
+                <input type="text" id="task-title" placeholder="Título de la tarea" required>
             </div>
             <div class="form-group">
                 <label for="task-description">Descripción</label>
                 <textarea id="task-description" rows="3" placeholder="Descripción de la tarea"></textarea>
             </div>
             <div class="form-group">
-                <label for="task-assignee">Asignar a</label>
-                <select id="task-assignee">
-                    <option value="">Seleccionar miembro</option>
-                    <option value="user1">Usuario 1</option>
-                    <option value="user2">Usuario 2</option>
+                <label for="task-Ini-date">Fecha Inicio</label>
+                <input type="date" id="task-Ini-date" required>
+            </div>
+            <div class="form-group">
+                <label for="task-lim-date">Fecha límite</label>
+                <input type="date" id="task-lim-date" required>
+            </div>
+            <div class="form-group">
+                <label for="task-priority">Prioridad</label>
+                <select id="task-priority">
+                    <option value="baja">Baja</option>
+                    <option value="media" selected>Media</option>
+                    <option value="alta">Alta</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="task-due-date">Fecha límite</label>
-                <input type="date" id="task-due-date">
+                <label for="task-assignee">Asignar a</label>
+                <select id="task-assignee">
+                    <option value="">Seleccionar miembro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="task-dependencies">Dependencias (selecciona tareas)</label>
+                <select id="task-dependencies" multiple>
+                </select>
             </div>
             <div class="form-actions">
                 <button class="btn btn-secondary" id="cancel-task">Cancelar</button>
@@ -159,47 +179,189 @@
             </div>
         </div>
     </div>
-    
-    <!-- Modal para invitar usuarios -->
+
     <div class="modal" id="invite-modal">
         <div class="modal-content">
             <h3 class="modal-title">Invitar a Proyecto</h3>
             <div class="form-group">
-                <label for="invite-email">Invitar por correo</label>
-                <input type="email" id="invite-email" placeholder="correo@example.com">
-                <button class="btn btn-primary" style="margin-top: 5px;">Enviar Invitación</button>
+                <label for="invite-email">Correo electrónico del usuario a invitar</label>
+                <input type="email" id="invite-email" placeholder="correo@example.com" required>
             </div>
-            
-            <div class="invite-methods">
-                <div class="invite-method">
-                    <label>Enlace de invitación</label>
-                    <div class="invite-code">
-                        <input type="text" id="invite-link" value="https://miweb.com/invite/abc123" readonly>
-                        <button class="copy-btn">Copiar</button>
-                    </div>
-                </div>
-                
-                <div class="invite-method">
-                    <label>Código de invitación</label>
-                    <div class="invite-code">
-                        <input type="text" id="invite-code" value="XyZ7k" readonly>
-                        <button class="copy-btn">Copiar</button>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="invite-role">Rol a asignar</label>
+                <select id="invite-role">
+                    <option value="miembro">Miembro</option>
+                    <option value="administrador">Administrador</option>
+                </select>
             </div>
-            
             <div class="form-actions">
                 <button class="btn btn-secondary" id="close-invite">Cerrar</button>
+                <button class="btn btn-primary" id="send-invite-email">Enviar Invitación</button>
             </div>
         </div>
     </div>
-    
-    <!-- Notificación -->
-    <div class="notification" id="notification">
-        Cambios guardados correctamente
+
+    <div class="modal" id="task-detail-modal">
+        <div class="modal-content task-detail">
+            <h3 id="detail-task-title">Título de la Tarea</h3>
+
+            <p><strong>Descripción:</strong> <span id="detail-task-description"></span></p>
+
+            <div class="task-details-info">
+                <p><strong>Fecha de Inicio:</strong> <span id="detail-task-ini-date"></span></p>
+                <p><strong>Fecha Límite:</strong> <span id="detail-task-lim-date"></span></p>
+                <p><strong>Prioridad:</strong> <span id="detail-task-priority"></span></p>
+                <p><strong>Asignado a:</strong> <span id="detail-task-assigned-to"></span></p>
+                <p>
+                    <strong>Estado:</strong>
+                    <span id="detail-task-status"></span>
+                    <select id="change-task-status" style="display: none;">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en-proceso">En Proceso</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                    <button class="btn btn-secondary" id="toggle-status-edit">Cambiar Estado</button>
+                </p>
+                <p>
+                    <strong>Completada:</strong>
+                    <input type="checkbox" id="mark-task-complete">
+                </p>
+            </div>
+
+            <div id="task-comments-section">
+                <h4>Comentarios</h4>
+                <div id="task-comments-list">
+                </div>
+                <textarea id="new-comment" placeholder="Añadir un comentario..."></textarea>
+                <button class="btn btn-primary" id="add-comment-btn">Enviar</button>
+            </div>
+
+            <div id="task-collaborators-section">
+                <h4>Colaboradores asignados</h4>
+                <ul id="collaborators-list">
+                </ul>
+            </div>
+
+            <div>
+                <h4>Archivos adjuntos</h4>
+                <input type="file" id="file-input" multiple style="display: none;">
+                <button class="btn btn-secondary" id="trigger-file-input">Adjuntar Archivos</button>
+                <ul id="attached-files-list">
+                </ul>
+            </div>
+
+            <div id="subtasks-section">
+                <h4>Subtareas</h4>
+                <ul id="subtasks-list">
+                </ul>
+            </div>
+
+            <div class="task-detail-actions">
+                <button class="btn btn-secondary" id="edit-task-btn">Editar Tarea</button>
+                <button class="btn btn-secondary" id="add-subtask-btn">Añadir Subtarea</button>
+                <button class="btn btn-danger" id="delete-task-btn">Eliminar Tarea</button>
+                <button class="btn btn-secondary" id="close-task-detail">Cerrar</button>
+            </div>
+        </div>
     </div>
-    
-   
-   
+
+    <div class="modal" id="subtask-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Añadir Nueva Subtarea</h3>
+            <div class="form-group">
+                <label for="subtask-title">Título</label>
+                <input type="text" id="subtask-title" placeholder="Título de la subtarea" required>
+            </div>
+            <div class="form-group">
+                <label for="subtask-description">Descripción</label>
+                <textarea id="subtask-description" rows="3" placeholder="Descripción de la subtarea"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="subtask-ini-date">Fecha Inicio</label>
+                <input type="date" id="subtask-ini-date" required>
+            </div>
+            <div class="form-group">
+                <label for="subtask-lim-date">Fecha límite</label>
+                <input type="date" id="subtask-lim-date" required>
+            </div>
+            <div class="form-group">
+                <label for="subtask-priority">Prioridad</label>
+                <select id="subtask-priority">
+                    <option value="baja">Baja</option>
+                    <option value="media" selected>Media</option>
+                    <option value="alta">Alta</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subtask-assignee">Asignar a</label>
+                <select id="subtask-assignee">
+                    <option value="">Seleccionar miembro</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancel-subtask">Cancelar</button>
+                <button class="btn btn-primary" id="save-subtask">Crear Subtarea</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Editar Perfil de Usuario</h3>
+            <!-- Se envolvió en un formulario y se añadió ID para JavaScript -->
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="edit-username">Nombre</label>
+                    <!-- Se añadió el atributo 'name' para fácil acceso en JS -->
+                    <input type="text" id="edit-username" name="nombre" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-userlastname">Apellido</label>
+                    <!-- Se añadió el campo de Apellido y su atributo 'name' -->
+                    <input type="text" id="edit-userlastname" name="apellido" placeholder="Tu apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-useremail">Correo Electrónico</label>
+                    <!-- Se añadió el atributo 'name' y se mantuvo 'readonly' -->
+                    <input type="email" id="edit-useremail" name="email" placeholder="tu@example.com" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="edit-password">Nueva Contraseña (opcional)</label>
+                    <!-- Se añadió el atributo 'name' -->
+                    <input type="password" id="edit-password" name="newPassword" placeholder="********">
+                </div>
+                <div class="form-actions">
+                    <!-- Se cambió el tipo a 'button' para el botón de cancelar -->
+                    <button type="button" class="btn btn-secondary" id="cancel-edit-profile">Cancelar</button>
+                    <!-- Se cambió el tipo a 'submit' para el botón de guardar -->
+                    <button type="submit" class="btn btn-primary" id="save-profile-changes">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmation-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Confirmación</h3>
+            <p id="confirmation-message" style="text-align: center; margin-bottom: 20px;"></p>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancel-action-btn">Cancelar</button>
+                <button class="btn btn-danger" id="confirm-action-btn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Se añadió un ID para el área de notificación para que JS la pueda controlar -->
+    <div class="notification" id="notificationArea"></div>
+
+    <!-- Se añadió un ID para el spinner de carga (si lo implementas en JS) -->
+    <div id="loadingSpinner"
+        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.7); color:white; padding:20px; border-radius:10px; z-index:9999;">
+        Cargando...</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+    <script src="admin.js"></script>
 </body>
+
 </html>
